@@ -5,7 +5,7 @@ def CargarUsuarios(matriz_usuario):
     edad=validarEdad(edad)
     while edad==-1:
         edad=int(input("Edad invalida, ingrese la edad nuevamente: "))
-            edad=validarEdad(edad)
+        edad=validarEdad(edad)
         
     mail=input("Ingrese el correo electronico: ")
     prog=input("Ingrese el programa mas visto: ")
@@ -18,7 +18,7 @@ def CargarUsuarios(matriz_usuario):
     matriz_usuario.append(usuario)
 
 
-    :
+
     
 
     
