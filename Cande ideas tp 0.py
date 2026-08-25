@@ -1,3 +1,4 @@
+
 import re
 from functools import reduce
 
@@ -23,6 +24,8 @@ programas = [
     ["412", "Davo Xeneize", "KICK", "Viernes", "21:00", "Deporte"],
     ["La Faraona", "Martin Cirio", "TWITCH", "Sabado", "17:00", "Espectaculo"],
     ["Ibai Llanos", "Ibai", "TWITCH", "Sabado", "17:00", "Espectaculo"],
+    ["Luli Pampin", "Luli Pampin", "TWITCH", "Domingo", "09:00","Infantil"],
+    ["Kiddodle Tv", "Kido", "TWITCH", "Miercoles", "09:00", "Infantil"],
 ]
 
 
