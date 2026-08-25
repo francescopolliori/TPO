@@ -1,32 +1,9 @@
-import re
 from functools import reduce
+from listas_programas import programas, DIAS_VALIDOS, CANALES_VALIDOS
 
-
-# ---------- ÍNDICES (para no usar "números mágicos") ----------
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
-DIAS_VALIDOS = ["lunes", "martes", "miercoles", "jueves",
-                "viernes", "sabado", "domingo"]
 
-CANALES_VALIDOS = ["luzu tv", "olga", "vorterix", "gelatina", "kick", "twitch"]
-
-
-# ---------- DATOS ----------
-programas = [
-    ["Nadie Dice Nada", "Nicolas Occhiato", "LUZU TV", "Lunes", "10:00", "Entretenimiento"],
-    ["Antes Que Nadie", "Diego Leuco", "LUZU TV", "Martes", "08:00", "Actualidad"],
-    ["Sone Que Volaba", "Migue Granados", "OLGA", "Lunes", "10:00", "Entretenimiento"],
-    ["Seria Increible", "Nati Jota", "OLGA", "Martes", "09:00", "Humor"],
-    ["Paren La Mano", "Luquitas Rodriguez", "VORTERIX", "Miercoles", "21:00", "Deporte"],
-    ["Y Que?", "Guillermo Aquino", "VORTERIX", "Jueves", "10:00", "Humor"],
-    ["Industria Nacional", "Pedro Rosemblat", "GELATINA", "Viernes", "08:00", "Actualidad"],
-    ["412", "Davo Xeneize", "KICK", "Viernes", "21:00", "Deporte"],
-    ["La Faraona", "Martin Cirio", "TWITCH", "Sabado", "17:00", "Espectaculo"],
-    ["Ibai Llanos", "Ibai", "TWITCH", "Sabado", "17:00", "Espectaculo"],
-]
-
-
-# ---------- VALIDACIONES (EXPRESIONES REGULARES) ----------
 def validar_horario(horario):
     """Valida que el horario tenga formato HH:MM en 24hs."""
     if len(horario) != 5 or horario[2] != ":":
@@ -80,7 +57,7 @@ def validar_canal(canal):
     return canal.lower() in CANALES_VALIDOS
 
 
-# ---------- ALTA / BAJA / MODIFICACIÓN ----------
+# ALTA / BAJA / MODIFICACIÓN 
 def agregar_programa(programas, nombre, streamer, canal, dia, horario, categoria):
     """Agrega un nuevo programa a la matriz, validando todos los campos."""
     if not validar_nombre(nombre):
@@ -126,7 +103,7 @@ def eliminar_programa(programas, nombre_programa):
     return False
 
 
-# ---------- IMPRESIÓN ----------
+#IMPRESIÓN
 def imprimir_programas(programas):
     """Imprime la matriz con formato de tabla."""
     print(
@@ -149,7 +126,7 @@ def imprimir_programas(programas):
         )
 
 
-# ---------- BÚSQUEDAS (FILTER + LAMBDA) ----------
+#BÚSQUEDAS
 def buscar_por_canal(programas, canal):
     return list(filter(lambda p: p[CANAL].lower() == canal.lower(), programas))
 
@@ -172,7 +149,7 @@ def buscar_por_nombre(programas, nombre):
     return list(filter(lambda p: nombre.lower() in p[NOMBRE].lower(), programas))
 
 
-# ---------- TRANSFORMACIONES (MAP + LAMBDA) ----------
+#TRANSFORMACIONES
 def obtener_nombres(programas):
     """Devuelve una lista solo con los nombres de los programas."""
     return list(map(lambda p: p[NOMBRE], programas))
@@ -183,7 +160,7 @@ def canales_en_mayusculas(programas):
     return list(map(lambda p: p[CANAL].upper(), programas))
 
 
-# ---------- ACUMULACIONES (REDUCE + LAMBDA) ----------
+# ACUMULACIONES
 def total_programas(programas):
     """Cuenta el total de programas usando reduce."""
     return reduce(lambda acc, p: acc + 1, programas, 0)
@@ -194,7 +171,7 @@ def concatenar_nombres(programas):
     return reduce(lambda acc, p: acc + p[NOMBRE] + " | ", programas, "")
 
 
-# ---------- ORDENAMIENTO ----------
+#ORDENAMIENTO
 def ordenar_por_horario(programas):
     return sorted(programas, key=lambda p: p[HORARIO])
 
@@ -211,7 +188,7 @@ def ordenar_por_canal(programas):
     return sorted(programas, key=lambda p: p[CANAL])
 
 
-# ---------- ESTADÍSTICAS ----------
+#ESTADÍSTICAS
 def contar_por_canal(programas):
     """Cuenta cuántos programas hay por canal."""
     conteo = {}
@@ -242,7 +219,7 @@ def detectar_choques_horario(programas):
     return choques
 
 
-# ---------- DEMOSTRACIÓN ----------
+#DEMOSTRACIÓN DE FUNCIONES
 if __name__ == "__main__":
     print("=== Listado completo ===")
     imprimir_programas(programas)
@@ -280,21 +257,3 @@ if __name__ == "__main__":
 
     print("\n=== Intentar agregar con nombre inválido (caracteres no permitidos) ===")
     agregar_programa(programas, "Show #$%", "Otro Streamer", "TWITCH", "Domingo", "20:00", "Humor")
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
