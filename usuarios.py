@@ -12,7 +12,7 @@ def CargarUsuarios(matriz_usuario):
 
     
     usuario.append(nombre)
-    usuario.append(edad)
+    usuario.append(edad) #Append de un True (mayor de 16) o False (menor de 16)
     usuario.append(mail)
     usuario.append(prog)
     matriz_usuario.append(usuario)
