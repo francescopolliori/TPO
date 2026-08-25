@@ -71,3 +71,67 @@ def contar_categorias_vistas(matriz_usuarios, programas):
             categoria = programas[indice][CATEGORIA]
             sumar_uno(nombres, cantidades, categoria)
     return nombres, cantidades        
+def categoria_mas_vista(matriz_usuarios, programas):
+    """Devuelve la categoria mas vista entre todos los usuarios."""
+    nombres, cantidades = contar_categorias_vistas(matriz_usuarios, programas)
+    return mejor_de(nombres, cantidades)
+
+
+# CANALES
+def contar_canales_suscriptos(matriz_usuarios, canales_validos):
+    """Cuenta cuantos usuarios estan suscriptos a cada canal.
+    Devuelve dos listas paralelas: nombres de canal y cantidades."""
+    nombres = []
+    cantidades = []
+    for u in matriz_usuarios:
+        indice = u[CANAL_SUSCRIPTO]
+        if 0 <= indice < len(canales_validos):
+            canal = canales_validos[indice].upper()
+            sumar_uno(nombres, cantidades, canal)
+    return nombres, cantidades
+
+
+def canal_mas_visto(matriz_usuarios, canales_validos):
+    """Devuelve el canal con mas usuarios suscriptos."""
+    nombres, cantidades = contar_canales_suscriptos(matriz_usuarios, canales_validos)
+    return mejor_de(nombres, cantidades)
+
+
+# HORARIOS
+def contar_horarios(matriz_usuarios):
+    """Cuenta cuantas veces aparece cada horario entre todos los usuarios.
+    Devuelve dos listas paralelas: horarios y cantidades."""
+    nombres = []
+    cantidades = []
+    for u in matriz_usuarios:
+        for horario in u[HORARIOS]:
+            sumar_uno(nombres, cantidades, horario)
+    return nombres, cantidades
+
+
+def horario_pico(matriz_usuarios):
+    """Devuelve el horario en que mas usuarios suelen ver contenido."""
+    nombres, cantidades = contar_horarios(matriz_usuarios)
+    return mejor_de(nombres, cantidades)
+
+
+def streamer_con_pico_de_vistas(matriz_usuarios, programas):
+    """Devuelve el streamer favorito mejor posicionado entre los programas
+    que se emiten justo en el horario pico (el streamer 'de moda' en el
+    horario de mayor audiencia)."""
+    pico = horario_pico(matriz_usuarios)
+    if pico is None:
+        return None
+
+    nombres_streamers, cantidades_streamers = contar_streamers_favoritos(matriz_usuarios, programas)
+
+    mejor_streamer = None
+    mejor_cantidad = -1
+    for p in programas:
+        if p[HORARIO] == pico:
+            streamer = p[STREAMER]
+            cantidad = buscar_cantidad(nombres_streamers, cantidades_streamers, streamer)
+            if cantidad > mejor_cantidad:
+                mejor_cantidad = cantidad
+                mejor_streamer = streamer
+    return mejor_streamer
