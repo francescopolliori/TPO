@@ -38,13 +38,20 @@ def validar_dia(dia):
 
 
 def validar_texto(texto):
-    """Valida que un texto no esté vacío y contenga solo letras, números,
-    espacios y los signos ¿ ? ¡ !, usando regex. Es reutilizada por
-    validar_nombre, validar_streamer y validar_categoria."""
+    """Valida que un texto no esté vacío y contenga solo letras, números
+    y espacios, sin usar regex. Es reutilizada por validar_nombre,
+    validar_streamer y validar_categoria."""
     texto = texto.strip()
     if not texto:
         return False
-    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ0-9¿?¡! ]+", texto))
+    for caracter in texto:
+        es_letra_minuscula = "a" <= caracter <= "z"
+        es_letra_mayuscula = "A" <= caracter <= "Z"
+        es_numero = "0" <= caracter <= "9"
+        es_espacio = caracter == " "
+        if not (es_letra_minuscula or es_letra_mayuscula or es_numero or es_espacio):
+            return False
+    return True
 
 
 def validar_nombre(nombre):
