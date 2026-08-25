@@ -1,9 +1,38 @@
+<<<<<<< HEAD:Cande ideas tp 0.py
+
+import re
+=======
+>>>>>>> f12c53c555ef4b32ac87a106e4c5c9427fec50c3:funciones_canales.py
 from functools import reduce
 from listas_programas import programas, DIAS_VALIDOS, CANALES_VALIDOS
 
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
 
+<<<<<<< HEAD:Cande ideas tp 0.py
+CANALES_VALIDOS = ["luzu tv", "olga", "vorterix", "gelatina", "kick", "twitch"]
+
+
+# ---------- DATOS ----------
+programas = [
+    ["Nadie Dice Nada", "Nicolas Occhiato", "LUZU TV", "Lunes", "10:00", "Entretenimiento"],
+    ["Antes Que Nadie", "Diego Leuco", "LUZU TV", "Martes", "08:00", "Actualidad"],
+    ["Sone Que Volaba", "Migue Granados", "OLGA", "Lunes", "10:00", "Entretenimiento"],
+    ["Seria Increible", "Nati Jota", "OLGA", "Martes", "09:00", "Humor"],
+    ["Paren La Mano", "Luquitas Rodriguez", "VORTERIX", "Miercoles", "21:00", "Deporte"],
+    ["Y Que?", "Guillermo Aquino", "VORTERIX", "Jueves", "10:00", "Humor"],
+    ["Industria Nacional", "Pedro Rosemblat", "GELATINA", "Viernes", "08:00", "Actualidad"],
+    ["412", "Davo Xeneize", "KICK", "Viernes", "21:00", "Deporte"],
+    ["La Faraona", "Martin Cirio", "TWITCH", "Sabado", "17:00", "Espectaculo"],
+    ["Ibai Llanos", "Ibai", "TWITCH", "Sabado", "17:00", "Espectaculo"],
+    ["Luli Pampin", "Luli Pampin", "TWITCH", "Domingo", "09:00","Infantil"],
+    ["Kiddodle Tv", "Kido", "TWITCH", "Miercoles", "09:00", "Infantil"],
+]
+
+
+# ---------- VALIDACIONES (EXPRESIONES REGULARES) ----------
+=======
+>>>>>>> f12c53c555ef4b32ac87a106e4c5c9427fec50c3:funciones_canales.py
 def validar_horario(horario):
     """Valida que el horario tenga formato HH:MM en 24hs."""
     if len(horario) != 5 or horario[2] != ":":
