@@ -32,8 +32,9 @@ def validar_horario(horario):
     if len(horario) != 5 or horario[2] != ":":
         return False
     hh, mm = horario[0:2], horario[3:5]
-    if not (hh.isdigit() and mm.isdigit()):
-        return False
+    for c in hh + mm:
+        if not ('0' <= c <= '9'):
+            return False
     return 0 <= int(hh) <= 23 and 0 <= int(mm) <= 59
 
 
