@@ -1,14 +1,15 @@
+<<<<<<< HEAD:Cande ideas tp 0.py
 
 import re
+=======
+>>>>>>> f12c53c555ef4b32ac87a106e4c5c9427fec50c3:funciones_canales.py
 from functools import reduce
+from listas_programas import programas, DIAS_VALIDOS, CANALES_VALIDOS
 
-
-# ---------- ÍNDICES (para no usar "números mágicos") ----------
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
-DIAS_VALIDOS = ["lunes", "martes", "miercoles", "jueves",
-                "viernes", "sabado", "domingo"]
 
+<<<<<<< HEAD:Cande ideas tp 0.py
 CANALES_VALIDOS = ["luzu tv", "olga", "vorterix", "gelatina", "kick", "twitch"]
 
 
@@ -30,9 +31,17 @@ programas = [
 
 
 # ---------- VALIDACIONES (EXPRESIONES REGULARES) ----------
+=======
+>>>>>>> f12c53c555ef4b32ac87a106e4c5c9427fec50c3:funciones_canales.py
 def validar_horario(horario):
-    """Valida que el horario tenga formato HH:MM en 24hs, usando regex."""
-    return bool(re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", horario))
+    """Valida que el horario tenga formato HH:MM en 24hs."""
+    if len(horario) != 5 or horario[2] != ":":
+        return False
+    hh, mm = horario[0:2], horario[3:5]
+    for c in hh + mm:
+        if not ('0' <= c <= '9'):
+            return False
+    return 0 <= int(hh) <= 23 and 0 <= int(mm) <= 59
 
 
 def validar_dia(dia):
@@ -41,13 +50,20 @@ def validar_dia(dia):
 
 
 def validar_texto(texto):
-    """Valida que un texto no esté vacío y contenga solo letras, números,
-    espacios y los signos ¿ ? ¡ !, usando regex. Es reutilizada por
-    validar_nombre, validar_streamer y validar_categoria."""
+    """Valida que un texto no esté vacío y contenga solo letras, números
+    y espacios, sin usar regex. Es reutilizada por validar_nombre,
+    validar_streamer y validar_categoria."""
     texto = texto.strip()
     if not texto:
         return False
-    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ0-9¿?¡! ]+", texto))
+    for caracter in texto:
+        es_letra_minuscula = "a" <= caracter <= "z"
+        es_letra_mayuscula = "A" <= caracter <= "Z"
+        es_numero = "0" <= caracter <= "9"
+        es_espacio = caracter == " "
+        if not (es_letra_minuscula or es_letra_mayuscula or es_numero or es_espacio):
+            return False
+    return True
 
 
 def validar_nombre(nombre):
@@ -70,7 +86,7 @@ def validar_canal(canal):
     return canal.lower() in CANALES_VALIDOS
 
 
-# ---------- ALTA / BAJA / MODIFICACIÓN ----------
+# ALTA / BAJA / MODIFICACIÓN 
 def agregar_programa(programas, nombre, streamer, canal, dia, horario, categoria):
     """Agrega un nuevo programa a la matriz, validando todos los campos."""
     if not validar_nombre(nombre):
@@ -116,7 +132,7 @@ def eliminar_programa(programas, nombre_programa):
     return False
 
 
-# ---------- IMPRESIÓN ----------
+#IMPRESIÓN
 def imprimir_programas(programas):
     """Imprime la matriz con formato de tabla."""
     print(
@@ -139,7 +155,7 @@ def imprimir_programas(programas):
         )
 
 
-# ---------- BÚSQUEDAS (FILTER + LAMBDA) ----------
+#BÚSQUEDAS
 def buscar_por_canal(programas, canal):
     return list(filter(lambda p: p[CANAL].lower() == canal.lower(), programas))
 
@@ -162,7 +178,7 @@ def buscar_por_nombre(programas, nombre):
     return list(filter(lambda p: nombre.lower() in p[NOMBRE].lower(), programas))
 
 
-# ---------- TRANSFORMACIONES (MAP + LAMBDA) ----------
+#TRANSFORMACIONES
 def obtener_nombres(programas):
     """Devuelve una lista solo con los nombres de los programas."""
     return list(map(lambda p: p[NOMBRE], programas))
@@ -173,7 +189,7 @@ def canales_en_mayusculas(programas):
     return list(map(lambda p: p[CANAL].upper(), programas))
 
 
-# ---------- ACUMULACIONES (REDUCE + LAMBDA) ----------
+# ACUMULACIONES
 def total_programas(programas):
     """Cuenta el total de programas usando reduce."""
     return reduce(lambda acc, p: acc + 1, programas, 0)
@@ -184,7 +200,7 @@ def concatenar_nombres(programas):
     return reduce(lambda acc, p: acc + p[NOMBRE] + " | ", programas, "")
 
 
-# ---------- ORDENAMIENTO ----------
+#ORDENAMIENTO
 def ordenar_por_horario(programas):
     return sorted(programas, key=lambda p: p[HORARIO])
 
@@ -201,7 +217,7 @@ def ordenar_por_canal(programas):
     return sorted(programas, key=lambda p: p[CANAL])
 
 
-# ---------- ESTADÍSTICAS ----------
+#ESTADÍSTICAS
 def contar_por_canal(programas):
     """Cuenta cuántos programas hay por canal."""
     conteo = {}
@@ -232,7 +248,7 @@ def detectar_choques_horario(programas):
     return choques
 
 
-# ---------- DEMOSTRACIÓN ----------
+#DEMOSTRACIÓN DE FUNCIONES
 if __name__ == "__main__":
     print("=== Listado completo ===")
     imprimir_programas(programas)
@@ -270,21 +286,3 @@ if __name__ == "__main__":
 
     print("\n=== Intentar agregar con nombre inválido (caracteres no permitidos) ===")
     agregar_programa(programas, "Show #$%", "Otro Streamer", "TWITCH", "Domingo", "20:00", "Humor")
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
