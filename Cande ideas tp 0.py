@@ -28,8 +28,13 @@ programas = [
 
 # ---------- VALIDACIONES (EXPRESIONES REGULARES) ----------
 def validar_horario(horario):
-    """Valida que el horario tenga formato HH:MM en 24hs, usando regex."""
-    return bool(re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", horario))
+    """Valida que el horario tenga formato HH:MM en 24hs."""
+    if len(horario) != 5 or horario[2] != ":":
+        return False
+    hh, mm = horario[0:2], horario[3:5]
+    if not (hh.isdigit() and mm.isdigit()):
+        return False
+    return 0 <= int(hh) <= 23 and 0 <= int(mm) <= 59
 
 
 def validar_dia(dia):
