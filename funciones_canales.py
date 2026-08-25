@@ -1,15 +1,9 @@
-<<<<<<< HEAD:Cande ideas tp 0.py
-
-import re
-=======
->>>>>>> f12c53c555ef4b32ac87a106e4c5c9427fec50c3:funciones_canales.py
 from functools import reduce
 from listas_programas import programas, DIAS_VALIDOS, CANALES_VALIDOS
 
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
 
-<<<<<<< HEAD:Cande ideas tp 0.py
 CANALES_VALIDOS = ["luzu tv", "olga", "vorterix", "gelatina", "kick", "twitch"]
 
 
@@ -31,8 +25,6 @@ programas = [
 
 
 # ---------- VALIDACIONES (EXPRESIONES REGULARES) ----------
-=======
->>>>>>> f12c53c555ef4b32ac87a106e4c5c9427fec50c3:funciones_canales.py
 def validar_horario(horario):
     """Valida que el horario tenga formato HH:MM en 24hs."""
     if len(horario) != 5 or horario[2] != ":":
