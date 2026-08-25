@@ -4,27 +4,7 @@ from listas_programas import programas, DIAS_VALIDOS, CANALES_VALIDOS
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
 
-CANALES_VALIDOS = ["luzu tv", "olga", "vorterix", "gelatina", "kick", "twitch"]
-
-
-# ---------- DATOS ----------
-programas = [
-    ["Nadie Dice Nada", "Nicolas Occhiato", "LUZU TV", "Lunes", "10:00", "Entretenimiento"],
-    ["Antes Que Nadie", "Diego Leuco", "LUZU TV", "Martes", "08:00", "Actualidad"],
-    ["Sone Que Volaba", "Migue Granados", "OLGA", "Lunes", "10:00", "Entretenimiento"],
-    ["Seria Increible", "Nati Jota", "OLGA", "Martes", "09:00", "Humor"],
-    ["Paren La Mano", "Luquitas Rodriguez", "VORTERIX", "Miercoles", "21:00", "Deporte"],
-    ["Y Que?", "Guillermo Aquino", "VORTERIX", "Jueves", "10:00", "Humor"],
-    ["Industria Nacional", "Pedro Rosemblat", "GELATINA", "Viernes", "08:00", "Actualidad"],
-    ["412", "Davo Xeneize", "KICK", "Viernes", "21:00", "Deporte"],
-    ["La Faraona", "Martin Cirio", "TWITCH", "Sabado", "17:00", "Espectaculo"],
-    ["Ibai Llanos", "Ibai", "TWITCH", "Sabado", "17:00", "Espectaculo"],
-    ["Luli Pampin", "Luli Pampin", "TWITCH", "Domingo", "09:00","Infantil"],
-    ["Kiddodle Tv", "Kido", "TWITCH", "Miercoles", "09:00", "Infantil"],
-]
-
-
-# ---------- VALIDACIONES (EXPRESIONES REGULARES) ----------
+#VALIDACIONES
 def validar_horario(horario):
     """Valida que el horario tenga formato HH:MM en 24hs."""
     if len(horario) != 5 or horario[2] != ":":
@@ -181,7 +161,7 @@ def canales_en_mayusculas(programas):
     return list(map(lambda p: p[CANAL].upper(), programas))
 
 
-# ACUMULACIONES
+#ACUMULACIONES
 def total_programas(programas):
     """Cuenta el total de programas usando reduce."""
     return reduce(lambda acc, p: acc + 1, programas, 0)
