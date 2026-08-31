@@ -47,6 +47,8 @@ def cargarUsuarios(matriz_usuario):
     usuario.append(streamer)
     usuario.append([inicio_horario, fin_horario])
     matriz_usuario.append(usuario)
-    return matriz_usuario
+    return matriz_usuario #crear funcion que imprima la lista
 
-#Para probarlo creen una lista vacia y llamen a la funcion cargarUsuarios(lista_vacia) e imprimanla
+#Para probarlo 
+#asd = cargarUsuarios(usuarios)
+#print(asd)
