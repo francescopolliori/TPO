@@ -27,8 +27,8 @@ def cargarUsuarios(matriz_usuario):
         edad=int(input("Edad invalida, ingrese la edad nuevamente: "))
         edad=validarEdad(edad)
         
-    prog=seleccionar_programa()
-    streamer=programas[prog][1]
+    prog=seleccionar_programa(edad)
+    streamer=programas[seleccionar_programa(edad,True)][1]
 
     inicio_horario=input("Ingrese el inicio de su horario recurrente(HH:MM): ")
     while validar_horario(inicio_horario)==False:
@@ -50,5 +50,5 @@ def cargarUsuarios(matriz_usuario):
     return matriz_usuario #crear funcion que imprima la lista
 
 #Para probarlo 
-#asd = cargarUsuarios(usuarios)
-#print(asd)
+asd = cargarUsuarios(usuarios)
+print(asd)
