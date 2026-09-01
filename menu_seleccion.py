@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # Si se ejecuta directamente, mostramos el menú de selección
     print("Ejecutando menú de selección de programas...\n")
     # Ejecutamos la función y guardamos el índice devuelto
-    posicion = seleccionar_programa(solo_conductor=True) # Cambiar a False si quieres ver todos los detalles
+    posicion = seleccionar_programa(18, solo_conductor=True) # Cambiar a False si quieres ver todos los detalles
 
     # Limpiamos pantalla por última vez para mostrar el resultado
     print("\033[H\033[2J" + "\n" * 40)

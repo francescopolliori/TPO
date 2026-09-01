@@ -28,7 +28,8 @@ def cargarUsuarios(matriz_usuario):
         edad=validarEdad(edad)
         
     prog=seleccionar_programa(edad)
-    streamer=programas[seleccionar_programa(edad,True)][1]
+    conductor_seleccionado=seleccionar_programa(edad, True)
+    streamer=conductor_seleccionado[1]
 
     inicio_horario=input("Ingrese el inicio de su horario recurrente(HH:MM): ")
     while validar_horario(inicio_horario)==False:
