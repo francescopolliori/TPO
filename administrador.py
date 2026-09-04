@@ -135,3 +135,45 @@ def streamer_con_pico_de_vistas(matriz_usuarios, programas):
                 mejor_cantidad = cantidad
                 mejor_streamer = streamer
     return mejor_streamer
+
+#REPORTE COMPLETO (para la opcion de administrador)
+def imprimir_estadisticas(matriz_usuarios, programas, canales_validos):
+    """Imprime en pantalla el resumen que pide la tarjeta de administrador:
+    vistas de la gente, categorias mas vistas, streamer mas visto,
+    streamer con pico de vistas y horario pico."""
+    print("=== ESTADISTICAS DE VISTAS ===")
+    print("Total de usuarios registrados: " + str(len(matriz_usuarios)))
+    print("Canal mas visto (suscripto): " + str(canal_mas_visto(matriz_usuarios, canales_validos)))
+    print("Categoria mas vista: " + str(categoria_mas_vista(matriz_usuarios, programas)))
+    print("Streamer mas visto: " + str(streamer_mas_visto(matriz_usuarios, programas)))
+    print("Streamer con pico de vistas: " + str(streamer_con_pico_de_vistas(matriz_usuarios, programas)))
+    print("Horario pico: " + str(horario_pico(matriz_usuarios)))
+
+    print("")
+    print("--- Detalle: conteo por categoria ---")
+    nombres_cat, cantidades_cat = contar_categorias_vistas(matriz_usuarios, programas)
+    for i in range(len(nombres_cat)):
+        print("  " + nombres_cat[i] + ": " + str(cantidades_cat[i]))
+
+    print("")
+    print("--- Detalle: conteo por streamer ---")
+    nombres_str, cantidades_str = contar_streamers_favoritos(matriz_usuarios, programas)
+    for i in range(len(nombres_str)):
+        print("  " + nombres_str[i] + ": " + str(cantidades_str[i]))
+
+    print("")
+    print("--- Detalle: conteo por canal suscripto ---")
+    nombres_can, cantidades_can = contar_canales_suscriptos(matriz_usuarios, canales_validos)
+    for i in range(len(nombres_can)):
+        print("  " + nombres_can[i] + ": " + str(cantidades_can[i]))
+
+    print("")
+    print("--- Detalle: conteo por horario ---")
+    nombres_hor, cantidades_hor = contar_horarios(matriz_usuarios)
+    for i in range(len(nombres_hor)):
+        print("  " + nombres_hor[i] + ": " + str(cantidades_hor[i]))
+
+
+#DEMOSTRACIÓN
+if __name__ == "__main__":
+    imprimir_estadisticas(matriz, programas, CANALES_VALIDOS)
