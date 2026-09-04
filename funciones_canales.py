@@ -4,7 +4,8 @@ from listas_programas import programas, DIAS_VALIDOS, CANALES_VALIDOS
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
 
-#VALIDACIONES
+
+# ---------- VALIDACIONES (EXPRESIONES REGULARES) ----------
 def validar_horario(horario):
     """Valida que el horario tenga formato HH:MM en 24hs."""
     if len(horario) != 5 or horario[2] != ":":
