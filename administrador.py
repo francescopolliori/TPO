@@ -1,4 +1,4 @@
-from listas_usuarios import matriz
+from listas_usuarios import usuarios
 from listas_programas import programas, CANALES_VALIDOS
 from funciones_canales import STREAMER, CANAL, CATEGORIA, HORARIO
 
@@ -176,4 +176,4 @@ def imprimir_estadisticas(matriz_usuarios, programas, canales_validos):
 
 #DEMOSTRACIÓN
 if __name__ == "__main__":
-    imprimir_estadisticas(matriz, programas, CANALES_VALIDOS)
+    imprimir_estadisticas(usuarios, programas, CANALES_VALIDOS)
