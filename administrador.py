@@ -1,5 +1,5 @@
 from listas_usuarios import usuarios
-from listas_programas import programas, CANALES_VALIDOS
+from listas_programas import programas, canales_validos
 from funciones_canales import STREAMER, CANAL, CATEGORIA, HORARIO
 
 # Indices de la matriz de usuarios (ver listas_usuarios.py)
@@ -176,4 +176,4 @@ def imprimir_estadisticas(matriz_usuarios, programas, canales_validos):
 
 #DEMOSTRACIÓN
 if __name__ == "__main__":
-    imprimir_estadisticas(usuarios, programas, CANALES_VALIDOS)
+    imprimir_estadisticas(usuarios, programas, canales_validos)

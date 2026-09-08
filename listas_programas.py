@@ -1,6 +1,6 @@
 
 
-dias_validos = ["lunes", "martes", "miercoles", "jueves",
+DIAS_VALIDOS = ["lunes", "martes", "miercoles", "jueves",
                 "viernes", "sabado", "domingo"]
 
 canales_validos = ["luzu tv", "olga", "vorterix", "gelatina", "kick", "twitch"]

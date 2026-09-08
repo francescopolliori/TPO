@@ -1,5 +1,5 @@
 from functools import reduce
-from listas_programas import programas, DIAS_VALIDOS, CANALES_VALIDOS
+from listas_programas import programas, DIAS_VALIDOS, canales_validos
 
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
@@ -24,8 +24,7 @@ def validar_dia(dia):
 
 def validar_texto(texto):
     """Valida que un texto no esté vacío y contenga solo letras, números
-    y espacios, sin usar regex. Es reutilizada por validar_nombre,
-    validar_streamer y validar_categoria."""
+    y espacios, sin usar regex."""
     texto = texto.strip()
     if not texto:
         return False
@@ -39,33 +38,18 @@ def validar_texto(texto):
     return True
 
 
-def validar_nombre(nombre):
-    """Valida el nombre del programa (reutiliza validar_texto)."""
-    return validar_texto(nombre)
-
-
-def validar_streamer(streamer):
-    """Valida el nombre del streamer (reutiliza validar_texto)."""
-    return validar_texto(streamer)
-
-
-def validar_categoria(categoria):
-    """Valida la categoría del programa (reutiliza validar_texto)."""
-    return validar_texto(categoria)
-
-
 def validar_canal(canal):
     """Valida que el canal esté dentro de la lista de canales conocidos."""
-    return canal.lower() in CANALES_VALIDOS
+    return canal.lower() in canales_validos
 
 
 # ALTA / BAJA / MODIFICACIÓN 
 def agregar_programa(programas, nombre, streamer, canal, dia, horario, categoria):
     """Agrega un nuevo programa a la matriz, validando todos los campos."""
-    if not validar_nombre(nombre):
+    if not validar_texto(nombre):
         print(f"Error: nombre '{nombre}' inválido.")
         return programas
-    if not validar_streamer(streamer):
+    if not validar_texto(streamer):
         print(f"Error: streamer '{streamer}' inválido.")
         return programas
     if not validar_canal(canal):
@@ -77,7 +61,7 @@ def agregar_programa(programas, nombre, streamer, canal, dia, horario, categoria
     if not validar_horario(horario):
         print(f"Error: horario '{horario}' inválido. Debe ser formato HH:MM.")
         return programas
-    if not validar_categoria(categoria):
+    if not validar_texto(categoria):
         print(f"Error: categoría '{categoria}' inválida.")
         return programas
     programas.append([nombre, streamer, canal, dia, horario, categoria])
