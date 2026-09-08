@@ -77,7 +77,7 @@ def menu_principal():
             
         # OPCIÓN 4: Salir
         elif opcion == '4':
-            print("\nSaliendo del programa... ¡Hasta luego!")
+            print("\nOperacion finalizada.")
             break
             
         else:
