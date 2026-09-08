@@ -221,41 +221,170 @@ def detectar_choques_horario(programas):
     return choques
 
 
-#DEMOSTRACIÓN DE FUNCIONES
+# MENÚ DE DEMOSTRACIÓN DE FUNCIONES
+def menu_demostraciones():
+    opciones = [
+        "Agregar programa válido",
+        "Listado completo",
+        "Buscar por canal",
+        "Buscar por streamer",
+        "Nombres de todos los programas (map)",
+        "Canales en mayúsculas (map)",
+        "Total de programas (reduce)",
+        "Concatenación de nombres (reduce)",
+        "Choques de horario",
+        "Salir"
+    ]
+
+    seleccion = 0
+
+    while True:
+        # limpiar la consola
+        print("\033[H\033[2J" + "\n" * 20)
+
+        print("=" * 55)
+        print("          DEMOSTRACIÓN DE FUNCIONES")
+        print("=" * 55)
+
+        # Muestra todas las opciones
+        for i in range(len(opciones)):
+            if i == seleccion:
+                print(" ➔ " + opciones[i])
+            else:
+                print("   " + opciones[i])
+
+        print("=" * 55)
+
+        accion = input("\nAcción (w/s) o ENTER: ").lower()
+
+        # Moverse hacia arriba
+        if accion == "w":
+            seleccion = (seleccion - 1) % len(opciones)
+
+        # Moverse hacia abajo
+        elif accion == "s":
+            seleccion = (seleccion + 1) % len(opciones)
+
+        # Ejecutar la opción seleccionada
+        elif accion == "":
+            print("\033[H\033[2J" + "\n" * 10)
+
+            # AGREGAR UN PROGRAMA VÁLIDO
+            if seleccion == 0:
+                print("=== AGREGAR PROGRAMA VÁLIDO ===")
+
+                # Copiamos la matriz para no modificar la lista original
+                programas_prueba = []
+
+                for programa in programas:
+                    programas_prueba.append(programa.copy())
+
+                agregar_programa(
+                    programas_prueba,
+                    "Nuevo Show",
+                    "Un Streamer",
+                    "TWITCH",
+                    "Domingo",
+                    "20:00",
+                    "Humor"
+                )
+
+                imprimir_programas(programas_prueba)
+
+            # MOSTRAR TODOS LOS PROGRAMAS
+            elif seleccion == 1:
+                print("=== LISTADO COMPLETO ===")
+                imprimir_programas(programas)
+
+            # BUSCAR PROGRAMAS POR CANAL
+            elif seleccion == 2:
+                print("=== BÚSQUEDA POR CANAL ===")
+
+                print("Canales disponibles:")
+
+                for canal in CANALES_VALIDOS:
+                    print("- " + canal.upper())
+
+                canal_buscado = input(
+                    "\nIngrese el nombre del canal: "
+                )
+
+                resultado = buscar_por_canal(
+                    programas,
+                    canal_buscado
+                )
+
+                if len(resultado) == 0:
+                    print(
+                        "\nNo se encontraron programas del canal:",
+                        canal_buscado
+                    )
+                else:
+                    print("\nProgramas encontrados:")
+                    imprimir_programas(resultado)
+
+            # BUSCAR PROGRAMAS POR STREAMER
+            elif seleccion == 3:
+                print("=== BÚSQUEDA POR STREAMER ===")
+
+                streamer_buscado = input(
+                    "Ingrese el nombre o una parte "
+                    "del nombre del streamer: "
+                )
+
+                resultado = buscar_por_streamer(
+                    programas,
+                    streamer_buscado
+                )
+
+                if len(resultado) == 0:
+                    print(
+                        "\nNo se encontraron streamers con el nombre:",
+                        streamer_buscado
+                    )
+                else:
+                    print("\nProgramas encontrados:")
+                    imprimir_programas(resultado)
+
+            # CONSEGUIR LOS NOMBRES CON MAP
+            elif seleccion == 4:
+                print("=== NOMBRES DE TODOS LOS PROGRAMAS (MAP) ===")
+                print(obtener_nombres(programas))
+
+            # CONVERTIR LOS CANALES A MAYÚSCULAS CON MAP
+            elif seleccion == 5:
+                print("=== CANALES EN MAYÚSCULAS (MAP) ===")
+                print(canales_en_mayusculas(programas))
+
+            # CONTAR PROGRAMAS CON REDUCE
+            elif seleccion == 6:
+                print("=== TOTAL DE PROGRAMAS (REDUCE) ===")
+                print(total_programas(programas))
+
+            # CONCATENAR NOMBRES CON REDUCE
+            elif seleccion == 7:
+                print("=== CONCATENACIÓN DE NOMBRES (REDUCE) ===")
+                print(concatenar_nombres(programas))
+
+            # DETECTAR PROGRAMAS EN EL MISMO DÍA Y HORARIO
+            elif seleccion == 8:
+                print("=== CHOQUES DE HORARIO ===")
+
+                choques = detectar_choques_horario(programas)
+
+                if len(choques) == 0:
+                    print("No se encontraron choques de horario.")
+                else:
+                    print(choques)
+
+            # SALIR DEL MENÚ
+            elif seleccion == 9:
+                print("Saliendo del menú...")
+                break
+
+            input("\nPresione ENTER para volver al menú...")
+
+
+# EJECUTAR MENÚ
 if __name__ == "__main__":
-    print("=== Listado completo ===")
-    imprimir_programas(programas)
-
-    print("\n=== Búsqueda por canal: OLGA ===")
-    imprimir_programas(buscar_por_canal(programas, "olga"))
-
-    print("\n=== Búsqueda por streamer: mig ===")
-    imprimir_programas(buscar_por_streamer(programas, "mig"))
-
-    print("\n=== Nombres de todos los programas (map) ===")
-    print(obtener_nombres(programas))
-
-    print("\n=== Canales en mayúsculas (map) ===")
-    print(canales_en_mayusculas(programas))
-
-    print("\n=== Total de programas (reduce) ===")
-    print(total_programas(programas))
-
-    print("\n=== Concatenación de nombres (reduce) ===")
-    print(concatenar_nombres(programas))
-
-    print("\n=== Choques de horario ===")
-    print(detectar_choques_horario(programas))
-
-    print("\n=== Agregar programa válido ===")
-    agregar_programa(programas, "Nuevo Show", "Un Streamer", "TWITCH", "Domingo", "20:00", "Humor")
-    imprimir_programas(programas)
-
-    print("\n=== Intentar agregar con horario inválido ===")
-    agregar_programa(programas, "Show Fallido", "Otro Streamer", "TWITCH", "Domingo", "25:99", "Humor")
-
-    print("\n=== Intentar agregar con canal inválido ===")
-    agregar_programa(programas, "Show Fallido 2", "Otro Streamer", "CANAL_FALSO", "Domingo", "20:00", "Humor")
-
-    print("\n=== Intentar agregar con nombre inválido (caracteres no permitidos) ===")
-    agregar_programa(programas, "Show #$%", "Otro Streamer", "TWITCH", "Domingo", "20:00", "Humor")
+    menu_demostraciones()
