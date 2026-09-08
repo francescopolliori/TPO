@@ -114,14 +114,17 @@ def imprimir_programas(programas):
 
 #BÚSQUEDAS
 def buscar_por_canal(programas, canal):
+    """Búsqueda exacta: encuentra todos los programas de un canal específico."""
     return list(filter(lambda p: p[CANAL].lower() == canal.lower(), programas))
 
 
 def buscar_por_dia(programas, dia):
+    """Búsqueda exacta: encuentra todos los programas que se emiten en un día específico."""
     return list(filter(lambda p: p[DIA].lower() == dia.lower(), programas))
 
 
 def buscar_por_categoria(programas, categoria):
+    """Búsqueda exacta: encuentra todos los programas de una categoría específica."""
     return list(filter(lambda p: p[CATEGORIA].lower() == categoria.lower(), programas))
 
 
@@ -159,10 +162,12 @@ def concatenar_nombres(programas):
 
 #ORDENAMIENTO
 def ordenar_por_horario(programas):
+    """Ordena la matriz de programas por horario de inicio."""
     return sorted(programas, key=lambda p: p[HORARIO])
 
 
 def ordenar_por_dia(programas):
+    """Ordena la matriz de programas por día de la semana, de lunes a domingo."""
     orden_dias = {
         "Lunes": 0, "Martes": 1, "Miercoles": 2, "Jueves": 3,
         "Viernes": 4, "Sabado": 5, "Domingo": 6,
@@ -171,6 +176,7 @@ def ordenar_por_dia(programas):
 
 
 def ordenar_por_canal(programas):
+    """Ordena la matriz de programas por canal alfabéticamente."""
     return sorted(programas, key=lambda p: p[CANAL])
 
 
@@ -184,10 +190,12 @@ def contar_por_canal(programas):
 
 
 def canales_unicos(programas):
+    """Devuelve una lista de canales únicos presentes en la matriz de programas."""
     return sorted(set(map(lambda p: p[CANAL], programas)))
 
 
 def categorias_unicas(programas):
+    """Devuelve una lista de categorías únicas presentes en la matriz de programas."""
     return sorted(set(map(lambda p: p[CATEGORIA], programas)))
 
 
@@ -207,6 +215,7 @@ def detectar_choques_horario(programas):
 
 # MENÚ DE DEMOSTRACIÓN DE FUNCIONES
 def menu_demostraciones():
+    """Muestra un menú interactivo para probar las funciones de la matriz de programas."""
     opciones = [
         "Agregar programa válido",
         "Listado completo",

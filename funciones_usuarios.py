@@ -3,7 +3,7 @@ from funciones_canales import validar_horario
 from menu_seleccion import seleccionar_programa
 from listas_programas import programas
 
-def validarEdad(edad):
+def validar_edad(edad):
     """Valida que la edad sea un número entero positivo."""
     if edad < 0:
         return -1
@@ -17,15 +17,15 @@ def horario_a_minutos(horario):
     return horas * 60 + minutos
 
 
-def cargarUsuarios(matriz_usuario):
+def cargar_usuarios(matriz_usuario):
     """Función para cargar usuarios en la matriz de usuarios."""
     usuario=[]
     nombre=input("Ingrese el nombre y apellido: ")
     edad=int(input("Ingrese la edad: "))
-    edad=validarEdad(edad)
+    edad=validar_edad(edad)
     while edad==-1:
         edad=int(input("Edad invalida, ingrese la edad nuevamente: "))
-        edad=validarEdad(edad)
+        edad=validar_edad(edad)
         
     prog=seleccionar_programa(edad)
     conductor_seleccionado=seleccionar_programa(edad, True)
@@ -51,5 +51,6 @@ def cargarUsuarios(matriz_usuario):
     return matriz_usuario #crear funcion que imprima la lista
 
 #Para probarlo 
-asd = cargarUsuarios(usuarios)
-print(asd)
+if __name__ == "__main__":
+    cargar_usuarios(usuarios)
+    print(usuarios)
