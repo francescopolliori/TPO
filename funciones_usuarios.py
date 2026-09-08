@@ -1,7 +1,7 @@
 from listas_usuarios import usuarios
 from funciones_canales import validar_horario
 from menu_seleccion import seleccionar_programa
-from listas_programas import programas
+from listas_programas import programas, canales_validos
 
 def validar_edad(edad):
     """Valida que la edad sea un número entero positivo."""
@@ -27,28 +27,42 @@ def cargar_usuarios(matriz_usuario):
         edad=int(input("Edad invalida, ingrese la edad nuevamente: "))
         edad=validar_edad(edad)
         
-    prog=seleccionar_programa(edad)
-    conductor_seleccionado=seleccionar_programa(edad, True)
-    streamer=conductor_seleccionado[1]
 
-    inicio_horario=input("Ingrese el inicio de su horario recurrente(HH:MM): ")
-    while validar_horario(inicio_horario)==False:
-        inicio_horario=input("Horario invalido, ingrese el inicio de su horario recurrente nuevamente(HH:MM): ")
+    prog = seleccionar_programa(edad)
 
-    fin_horario=input("Ingrese el fin de su horario recurrente(HH:MM): ")
+    indice_streamer = -1
+    for i in range(len(programas)):
+        if programas[i] == prog:
+            indice_streamer = i
+            break
+        
+    nombre_canal = prog[2].lower()
+    indice_canal = -1
+    
+    for i in range(len(canales_validos)):
+        if canales_validos[i] == nombre_canal:
+            indice_canal = i
+            break
+
+    inicio_horario = input("Ingrese el inicio de su horario recurrente(HH:MM): ")
+    while not validar_horario(inicio_horario):
+        inicio_horario = input("Horario invalido, ingrese el inicio de su horario recurrente nuevamente(HH:MM): ")
+
+    fin_horario = input("Ingrese el fin de su horario recurrente(HH:MM): ")
     while True:
         if validar_horario(fin_horario) and horario_a_minutos(fin_horario) > horario_a_minutos(inicio_horario):
             break
-        fin_horario=input("Horario invalido, ingrese el fin de su horario recurrente nuevamente (debe ser posterior al inicio)(HH:MM): ")
+        fin_horario = input("Horario invalido, ingrese el fin de su horario recurrente nuevamente (HH:MM): ")
 
-    usuario.append(len(matriz_usuario)+1)
+    usuario.append(len(matriz_usuario) + 1)
     usuario.append(nombre)
     usuario.append(edad)
-    usuario.append(prog)
-    usuario.append(streamer)
+    usuario.append(indice_canal)     
+    usuario.append(indice_streamer)  
     usuario.append([inicio_horario, fin_horario])
+    
     matriz_usuario.append(usuario)
-    return matriz_usuario #crear funcion que imprima la lista
+    return matriz_usuario
 
 #Para probarlo 
 if __name__ == "__main__":
