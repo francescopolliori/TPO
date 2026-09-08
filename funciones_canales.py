@@ -5,7 +5,7 @@ NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
 
 
-# ---------- VALIDACIONES (EXPRESIONES REGULARES) ----------
+#VALIDACIONES
 def validar_horario(horario):
     """Valida que el horario tenga formato HH:MM en 24hs."""
     if len(horario) != 5 or horario[2] != ":":

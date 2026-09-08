@@ -1,6 +1,8 @@
 from listas_programas import programas
 
 def seleccionar_programa(edad, solo_conductor=False):
+    """Muestra un menú de selección de programas o de conductores según la 
+    edad del usuario y devuelve el índice del programa seleccionado."""
     # 1. Filtramos por edad
     if edad >= 18:
         programas_filtrados = programas

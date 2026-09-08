@@ -1,9 +1,9 @@
 
 
-DIAS_VALIDOS = ["lunes", "martes", "miercoles", "jueves",
+dias_validos = ["lunes", "martes", "miercoles", "jueves",
                 "viernes", "sabado", "domingo"]
 
-CANALES_VALIDOS = ["luzu tv", "olga", "vorterix", "gelatina", "kick", "twitch"]
+canales_validos = ["luzu tv", "olga", "vorterix", "gelatina", "kick", "twitch"]
 
 
 #DATOS
@@ -21,3 +21,11 @@ programas = [
     ["Luli Pampin", "Luli Pampin", "TWITCH", "Domingo", "09:00", "Infantil"],
     ["Kidddle", "Kido", "TWITCH", "Miercoles", "09:00", "Infantil"]
 ]
+""" Lista de programas con sus datos:
+    0: Nombre del programa
+    1: Conductor
+    2: Plataforma
+    3: Día de la semana
+    4: Hora de inicio
+    5: Género
+"""
