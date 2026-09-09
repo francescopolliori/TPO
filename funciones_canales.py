@@ -236,7 +236,7 @@ def menu_demostraciones():
         print("\033[H\033[2J" + "\n" * 20)
 
         print("=" * 55)
-        print("          DEMOSTRACIÓN DE FUNCIONES")
+        print("          CARGAR/MODIFICAR FUNCIONES")
         print("=" * 55)
 
         # Muestra todas las opciones
