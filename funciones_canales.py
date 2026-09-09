@@ -264,25 +264,32 @@ def menu_demostraciones():
 
             # AGREGAR UN PROGRAMA VÁLIDO
             if seleccion == 0:
-                print("=== AGREGAR PROGRAMA VÁLIDO ===")
+                print("=== AGREGAR PROGRAMA ===")
 
-                # Copiamos la matriz para no modificar la lista original
-                programas_prueba = []
+                nombre = input("Ingrese el nombre del programa: ")
+                streamer = input("Ingrese el nombre del streamer: ")
+                canal = input("Ingrese el canal: ")
+                dia = input("Ingrese el día: ")
+                horario = input("Ingrese el horario (HH:MM): ")
+                categoria = input("Ingrese la categoría: ")
 
-                for programa in programas:
-                    programas_prueba.append(programa.copy())
+                cantidad_anterior = len(programas)
 
                 agregar_programa(
-                    programas_prueba,
-                    "Nuevo Show",
-                    "Un Streamer",
-                    "TWITCH",
-                    "Domingo",
-                    "20:00",
-                    "Humor"
-                )
+                    programas,
+                    nombre,
+                    streamer,
+                    canal,
+                    dia,
+                    horario,
+                    categoria
+    )
 
-                imprimir_programas(programas_prueba)
+                if len(programas) > cantidad_anterior:
+                    print("\nPrograma agregado correctamente.")
+                    imprimir_programas(programas)
+                else:
+                    print("\nNo se pudo agregar el programa.")
 
             # MOSTRAR TODOS LOS PROGRAMAS
             elif seleccion == 1:
