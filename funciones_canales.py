@@ -215,9 +215,10 @@ def detectar_choques_horario(programas):
 
 # MENÚ DE DEMOSTRACIÓN DE FUNCIONES
 def menu_demostraciones():
-    """Muestra un menú interactivo para probar las funciones de la matriz de programas."""
     opciones = [
-        "Agregar programa válido",
+        "Agregar programa",
+        "Eliminar programa",
+        "Actualizar horario",
         "Listado completo",
         "Buscar por canal",
         "Buscar por streamer",
@@ -232,14 +233,12 @@ def menu_demostraciones():
     seleccion = 0
 
     while True:
-        # limpiar la consola
         print("\033[H\033[2J" + "\n" * 20)
 
         print("=" * 55)
-        print("          CARGAR/MODIFICAR FUNCIONES")
+        print("          MENÚ DE FUNCIONES")
         print("=" * 55)
 
-        # Muestra todas las opciones
         for i in range(len(opciones)):
             if i == seleccion:
                 print(" ➔ " + opciones[i])
@@ -250,19 +249,16 @@ def menu_demostraciones():
 
         accion = input("\nAcción (w/s) o ENTER: ").lower()
 
-        # Moverse hacia arriba
         if accion == "w":
             seleccion = (seleccion - 1) % len(opciones)
 
-        # Moverse hacia abajo
         elif accion == "s":
             seleccion = (seleccion + 1) % len(opciones)
 
-        # Ejecutar la opción seleccionada
         elif accion == "":
             print("\033[H\033[2J" + "\n" * 10)
 
-            # AGREGAR UN PROGRAMA VÁLIDO
+            # AGREGAR PROGRAMA
             if seleccion == 0:
                 print("=== AGREGAR PROGRAMA ===")
 
@@ -283,7 +279,7 @@ def menu_demostraciones():
                     dia,
                     horario,
                     categoria
-    )
+                )
 
                 if len(programas) > cantidad_anterior:
                     print("\nPrograma agregado correctamente.")
@@ -291,18 +287,68 @@ def menu_demostraciones():
                 else:
                     print("\nNo se pudo agregar el programa.")
 
-            # MOSTRAR TODOS LOS PROGRAMAS
+            # ELIMINAR PROGRAMA
             elif seleccion == 1:
+                print("=== ELIMINAR PROGRAMA ===")
+
+                imprimir_programas(programas)
+
+                nombre_programa = input(
+                    "\nIngrese el nombre del programa que desea eliminar: "
+                )
+
+                eliminado = eliminar_programa(
+                    programas,
+                    nombre_programa
+                )
+
+                if eliminado:
+                    print("\nPrograma eliminado correctamente.")
+                    imprimir_programas(programas)
+                else:
+                    print("\nNo se encontró el programa.")
+
+            # ACTUALIZAR HORARIO
+            elif seleccion == 2:
+                print("=== ACTUALIZAR HORARIO ===")
+
+                imprimir_programas(programas)
+
+                nombre_programa = input(
+                    "\nIngrese el nombre del programa: "
+                )
+
+                nuevo_horario = input(
+                    "Ingrese el nuevo horario (HH:MM): "
+                )
+
+                actualizado = actualizar_horario(
+                    programas,
+                    nombre_programa,
+                    nuevo_horario
+                )
+
+                if actualizado:
+                    print("\nHorario actualizado correctamente.")
+                    imprimir_programas(programas)
+                else:
+                    print(
+                        "\nNo se pudo actualizar el horario. "
+                        "Verifique el nombre y el horario ingresados."
+                    )
+
+            # LISTADO COMPLETO
+            elif seleccion == 3:
                 print("=== LISTADO COMPLETO ===")
                 imprimir_programas(programas)
 
-            # BUSCAR PROGRAMAS POR CANAL
-            elif seleccion == 2:
+            # BÚSQUEDA POR CANAL
+            elif seleccion == 4:
                 print("=== BÚSQUEDA POR CANAL ===")
 
                 print("Canales disponibles:")
 
-                for canal in canales_validos:
+                for canal in CANALES_VALIDOS:
                     print("- " + canal.upper())
 
                 canal_buscado = input(
@@ -323,8 +369,8 @@ def menu_demostraciones():
                     print("\nProgramas encontrados:")
                     imprimir_programas(resultado)
 
-            # BUSCAR PROGRAMAS POR STREAMER
-            elif seleccion == 3:
+            # BÚSQUEDA POR STREAMER
+            elif seleccion == 5:
                 print("=== BÚSQUEDA POR STREAMER ===")
 
                 streamer_buscado = input(
@@ -346,28 +392,28 @@ def menu_demostraciones():
                     print("\nProgramas encontrados:")
                     imprimir_programas(resultado)
 
-            # CONSEGUIR LOS NOMBRES CON MAP
-            elif seleccion == 4:
+            # NOMBRES DE LOS PROGRAMAS
+            elif seleccion == 6:
                 print("=== NOMBRES DE TODOS LOS PROGRAMAS (MAP) ===")
                 print(obtener_nombres(programas))
 
-            # CONVERTIR LOS CANALES A MAYÚSCULAS CON MAP
-            elif seleccion == 5:
+            # CANALES EN MAYÚSCULAS
+            elif seleccion == 7:
                 print("=== CANALES EN MAYÚSCULAS (MAP) ===")
                 print(canales_en_mayusculas(programas))
 
-            # CONTAR PROGRAMAS CON REDUCE
-            elif seleccion == 6:
+            # TOTAL DE PROGRAMAS
+            elif seleccion == 8:
                 print("=== TOTAL DE PROGRAMAS (REDUCE) ===")
                 print(total_programas(programas))
 
-            # CONCATENAR NOMBRES CON REDUCE
-            elif seleccion == 7:
+            # CONCATENAR NOMBRES
+            elif seleccion == 9:
                 print("=== CONCATENACIÓN DE NOMBRES (REDUCE) ===")
                 print(concatenar_nombres(programas))
 
-            # DETECTAR PROGRAMAS EN EL MISMO DÍA Y HORARIO
-            elif seleccion == 8:
+            # CHOQUES DE HORARIO
+            elif seleccion == 10:
                 print("=== CHOQUES DE HORARIO ===")
 
                 choques = detectar_choques_horario(programas)
@@ -377,14 +423,13 @@ def menu_demostraciones():
                 else:
                     print(choques)
 
-            # SALIR DEL MENÚ
-            elif seleccion == 9:
+            # SALIR
+            elif seleccion == 11:
                 print("Saliendo del menú...")
                 break
 
             input("\nPresione ENTER para volver al menú...")
 
 
-# EJECUTAR MENÚ
 if __name__ == "__main__":
     menu_demostraciones()
