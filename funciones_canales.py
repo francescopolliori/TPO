@@ -348,7 +348,7 @@ def menu_demostraciones():
 
                 print("Canales disponibles:")
 
-                for canal in CANALES_VALIDOS:
+                for canal in canales_validos:
                     print("- " + canal.upper())
 
                 canal_buscado = input(
