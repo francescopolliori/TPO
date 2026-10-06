@@ -117,26 +117,9 @@ def buscar_por_canal(programas, canal):
     """Búsqueda exacta: encuentra todos los programas de un canal específico."""
     return list(filter(lambda p: p[CANAL].lower() == canal.lower(), programas))
 
-
-def buscar_por_dia(programas, dia):
-    """Búsqueda exacta: encuentra todos los programas que se emiten en un día específico."""
-    return list(filter(lambda p: p[DIA].lower() == dia.lower(), programas))
-
-
-def buscar_por_categoria(programas, categoria):
-    """Búsqueda exacta: encuentra todos los programas de una categoría específica."""
-    return list(filter(lambda p: p[CATEGORIA].lower() == categoria.lower(), programas))
-
-
 def buscar_por_streamer(programas, streamer):
     """Búsqueda parcial: encuentra el streamer aunque escriban solo una parte del nombre."""
     return list(filter(lambda p: streamer.lower() in p[STREAMER].lower(), programas))
-
-
-def buscar_por_nombre(programas, nombre):
-    """Búsqueda parcial por nombre de programa."""
-    return list(filter(lambda p: nombre.lower() in p[NOMBRE].lower(), programas))
-
 
 #TRANSFORMACIONES
 def obtener_nombres(programas):
