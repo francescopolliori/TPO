@@ -11,10 +11,29 @@ def validar_edad(edad):
         return edad
 
 
-def horario_a_minutos(horario):
-    """Convierte un horario en formato HH:MM a minutos totales."""
+MINUTOS_DIA = 24 * 60
+
+def horario_a_minutos(horario, referencia=None):
+    """Convierte HH:MM a minutos. Si el horario es menor o igual
+    que la referencia, lo interpreta como del día siguiente.
+    """
+    if not validar_horario(horario):
+        raise ValueError(f"Horario '{horario}' inválido.")
+
     horas, minutos = map(int, horario.split(":"))
-    return horas * 60 + minutos
+    total = horas * 60 + minutos
+
+    if referencia is not None:
+        if not validar_horario(referencia):
+            raise ValueError(f"Horario de referencia '{referencia}' inválido.")
+
+        horas_ref, minutos_ref = map(int, referencia.split(":"))
+        minutos_referencia = horas_ref * 60 + minutos_ref
+
+        if total <= minutos_referencia:
+            total += MINUTOS_DIA
+
+    return total
 
 
 def cargar_usuarios(matriz_usuario):
@@ -50,7 +69,8 @@ def cargar_usuarios(matriz_usuario):
 
     fin_horario = input("Ingrese el fin de su horario recurrente(HH:MM): ")
     while True:
-        if validar_horario(fin_horario) and horario_a_minutos(fin_horario) > horario_a_minutos(inicio_horario):
+    
+        if validar_horario(fin_horario) and horario_a_minutos(fin_horario, inicio_horario) > horario_a_minutos(inicio_horario):
             break
         fin_horario = input("Horario invalido, ingrese el fin de su horario recurrente nuevamente (HH:MM): ")
 
