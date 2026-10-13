@@ -136,6 +136,46 @@ def streamer_con_pico_de_vistas(matriz_usuarios, programas):
                 mejor_streamer = streamer
     return mejor_streamer
 
+def mostrar_tabla_usuarios(matriz_usuarios, programas, canales_validos):
+    """Imprime una tabla alineada con todos los datos de los usuarios,
+    traduciendo los índices de canal y streamer a sus nombres reales."""
+    
+    # Anchos de columna fijos para mantener la alineación de la tabla
+    w_id, w_nom, w_edad, w_canal, w_streamer, w_hor = 4, 12, 6, 18, 18, 20
+    
+    # Límite horizontal
+    linea = f"+{'-'*(w_id+2)}+{'-'*(w_nom+2)}+{'-'*(w_edad+2)}+{'-'*(w_canal+2)}+{'-'*(w_streamer+2)}+{'-'*(w_hor+2)}+"
+
+    print(linea)
+    print(f"| {'ID':<{w_id}} | {'Nombre':<{w_nom}} | {'Edad':<{w_edad}} | {'Canal Sub':<{w_canal}} | {'Streamer Fav.':<{w_streamer}} | {'Horarios':<{w_hor}} |")
+    print(linea)
+
+    for u in matriz_usuarios:
+        user_id = u[ID]
+        nombre = u[NOMBRE_USUARIO]
+        edad = u[EDAD]
+        
+        # Buscar el nombre del canal según su índice
+        idx_canal = u[CANAL_SUSCRIPTO]
+        if 0 <= idx_canal < len(canales_validos):
+            canal = canales_validos[idx_canal].upper()
+        else:
+            canal = "Sin Suscripción"
+
+        # Buscar el nombre del streamer dentro de la lista 'programas'
+        idx_streamer = u[STREAMER_FAVORITO]
+        if 0 <= idx_streamer < len(programas):
+            streamer = programas[idx_streamer][STREAMER]
+        else:
+            streamer = "Ninguno"
+
+        # Unir los horarios de la lista en un solo string
+        horarios = ", ".join(u[HORARIOS])
+
+        print(f"| {user_id:<{w_id}} | {nombre:<{w_nom}} | {edad:<{w_edad}} | {canal:<{w_canal}} | {streamer:<{w_streamer}} | {horarios:<{w_hor}} |")
+
+    print(linea)
+
 #REPORTE COMPLETO (para la opcion de administrador)
 def imprimir_estadisticas(matriz_usuarios, programas, canales_validos):
     """Imprime en pantalla el resumen que pide la tarjeta de administrador:
@@ -172,6 +212,8 @@ def imprimir_estadisticas(matriz_usuarios, programas, canales_validos):
     nombres_hor, cantidades_hor = contar_horarios(matriz_usuarios)
     for i in range(len(nombres_hor)):
         print("  " + nombres_hor[i] + ": " + str(cantidades_hor[i]))
+
+    mostrar_tabla_usuarios(usuarios, programas, canales_validos)
 
 
 #DEMOSTRACIÓN

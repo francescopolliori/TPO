@@ -42,45 +42,16 @@ def horario_a_minutos(horario):
     return horas * 60 + minutos
 
 
-def pedir_nombre():
-    """Pide nombre y apellido hasta que tengan formato válido."""
-    while True:
-        nombre = input("Ingrese el nombre y apellido: ").strip()
-        if validar_nombre(nombre):
-            return nombre
-        print("Nombre inválido. Use solo letras y separe nombre y apellido con un espacio.")
-
-
-def pedir_edad():
-    """Pide la edad hasta que sea un entero positivo."""
-    while True:
-        texto = input("Ingrese la edad: ").strip()
-        if not re.fullmatch(PATRON_EDAD, texto):
-            print("Debe ingresar un número entero.")
-            continue
-        edad = int(texto)
-        if validar_edad(edad) != -1:
-            return edad
-        print("Edad inválida.")
-
-
-def pedir_horario(mensaje, minimo=None):
-    """Pide un horario HH:MM; si se indica 'minimo' (en minutos), debe ser posterior."""
-    while True:
-        horario = input(mensaje).strip()
-        if validar_horario(horario):
-            if minimo is None or horario_a_minutos(horario) > minimo:
-                return horario
-            print("El fin debe ser posterior al inicio.")
-        else:
-            print("Horario inválido. Use el formato HH:MM (ej: 09:30).")
-
-
 def cargar_usuarios(matriz_usuario):
     """Función para cargar usuarios en la matriz de usuarios."""
-    usuario = []
-    nombre = pedir_nombre()
-    edad = pedir_edad()
+    usuario=[]
+    nombre=input("Ingrese el nombre y apellido: ")
+    edad=int(input("Ingrese la edad: "))
+    edad=validar_edad(edad)
+    while edad==-1:
+        edad=int(input("Edad invalida, ingrese la edad nuevamente: "))
+        edad=validar_edad(edad)
+        
 
     prog = seleccionar_programa(edad)
 
@@ -109,8 +80,7 @@ def cargar_usuarios(matriz_usuario):
     matriz_usuario.append(usuario)
     return matriz_usuario
 
-
-# Para probarlo
+#Para probarlo 
 if __name__ == "__main__":
     cargar_usuarios(usuarios)
     print(usuarios)

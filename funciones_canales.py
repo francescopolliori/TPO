@@ -143,45 +143,7 @@ def concatenar_nombres(programas):
     return reduce(lambda acc, p: acc + p[NOMBRE] + " | ", programas, "")
 
 
-#ORDENAMIENTO
-def ordenar_por_horario(programas):
-    """Ordena la matriz de programas por horario de inicio."""
-    return sorted(programas, key=lambda p: p[HORARIO])
-
-
-def ordenar_por_dia(programas):
-    """Ordena la matriz de programas por día de la semana, de lunes a domingo."""
-    orden_dias = {
-        "Lunes": 0, "Martes": 1, "Miercoles": 2, "Jueves": 3,
-        "Viernes": 4, "Sabado": 5, "Domingo": 6,
-    }
-    return sorted(programas, key=lambda p: orden_dias.get(p[DIA], 99))
-
-
-def ordenar_por_canal(programas):
-    """Ordena la matriz de programas por canal alfabéticamente."""
-    return sorted(programas, key=lambda p: p[CANAL])
-
-
 #ESTADÍSTICAS
-def contar_por_canal(programas):
-    """Cuenta cuántos programas hay por canal."""
-    conteo = {}
-    for p in programas:
-        conteo[p[CANAL]] = conteo.get(p[CANAL], 0) + 1
-    return conteo
-
-
-def canales_unicos(programas):
-    """Devuelve una lista de canales únicos presentes en la matriz de programas."""
-    return sorted(set(map(lambda p: p[CANAL], programas)))
-
-
-def categorias_unicas(programas):
-    """Devuelve una lista de categorías únicas presentes en la matriz de programas."""
-    return sorted(set(map(lambda p: p[CATEGORIA], programas)))
-
-
 def detectar_choques_horario(programas):
     """Devuelve pares de programas que van el mismo día y horario."""
     choques = []
