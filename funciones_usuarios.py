@@ -1,3 +1,5 @@
+import re
+
 from listas_usuarios import usuarios
 from funciones_canales import validar_horario
 from menu_seleccion import seleccionar_programa
@@ -16,11 +18,24 @@ def horario_a_minutos(horario):
     horas, minutos = map(int, horario.split(":"))
     return horas * 60 + minutos
 
+def ingresar_nombre():
+    """Función para ingresar el nombre del usuario."""
+    while True:
+        nombre = input("Ingrese el nombre y apellido: ")
+        if nombre.strip() == "":
+            print("El nombre no puede estar vacío. Intente nuevamente.")
+        elif not re.match("^[a-zA-Z ]+$", nombre):
+            print("El nombre solo puede contener letras y espacios. Intente nuevamente.")
+        elif not re.match("^[A-Z][a-z]+ [A-Z][a-z]+$", nombre):
+            print("El nombre debe tener el formato 'Nombre Apellido'. Intente nuevamente.")
+        else:
+            break
+    return nombre
 
 def cargar_usuarios(matriz_usuario):
     """Función para cargar usuarios en la matriz de usuarios."""
     usuario=[]
-    nombre=input("Ingrese el nombre y apellido: ")
+    nombre = ingresar_nombre()
     edad=int(input("Ingrese la edad: "))
     edad=validar_edad(edad)
     while edad==-1:
@@ -64,7 +79,4 @@ def cargar_usuarios(matriz_usuario):
     matriz_usuario.append(usuario)
     return matriz_usuario
 
-#Para probarlo 
-if __name__ == "__main__":
-    cargar_usuarios(usuarios)
-    print(usuarios)
+#Para probarlo creen una lista vacia y llamen a la funcion cargarUsuarios(lista_vacia) e imprimanla
