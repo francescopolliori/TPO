@@ -9,7 +9,7 @@ PATRON_HORARIO = r"([01][0-9]|2[0-3]):([0-5][0-9])"
 
 
 def validar_edad(edad):
-    """Valida que la edad sea un número entero positivo."""
+    """Valida que la edad sea un entero entre 1 y 120. Devuelve -1 si no lo es."""
     if edad <= 0 or edad > 120:
         return -1
     else:
@@ -42,16 +42,45 @@ def horario_a_minutos(horario):
     return horas * 60 + minutos
 
 
+def pedir_nombre():
+    """Pide nombre y apellido hasta que tengan formato válido."""
+    while True:
+        nombre = input("Ingrese el nombre y apellido: ").strip()
+        if validar_nombre(nombre):
+            return nombre
+        print("Nombre inválido. Use solo letras y separe nombre y apellido con un espacio.")
+
+
+def pedir_edad():
+    """Pide la edad hasta que sea un entero válido (1 a 120)."""
+    while True:
+        texto = input("Ingrese la edad: ").strip()
+        if not re.fullmatch(PATRON_EDAD, texto):
+            print("Debe ingresar un número entero.")
+            continue
+        edad = int(texto)
+        if validar_edad(edad) != -1:
+            return edad
+        print("Edad inválida. Debe estar entre 1 y 120.")
+
+
+def pedir_horario(mensaje, minimo=None):
+    """Pide un horario HH:MM; si se indica 'minimo' (en minutos), debe ser posterior."""
+    while True:
+        horario = input(mensaje).strip()
+        if validar_horario(horario):
+            if minimo is None or horario_a_minutos(horario) > minimo:
+                return horario
+            print("El fin debe ser posterior al inicio.")
+        else:
+            print("Horario inválido. Use el formato HH:MM (ej: 09:30).")
+
+
 def cargar_usuarios(matriz_usuario):
     """Función para cargar usuarios en la matriz de usuarios."""
-    usuario=[]
-    nombre=input("Ingrese el nombre y apellido: ")
-    edad=int(input("Ingrese la edad: "))
-    edad=validar_edad(edad)
-    while edad==-1:
-        edad=int(input("Edad invalida, ingrese la edad nuevamente: "))
-        edad=validar_edad(edad)
-        
+    usuario = []
+    nombre = pedir_nombre()
+    edad = pedir_edad()
 
     prog = seleccionar_programa(edad)
 
@@ -80,7 +109,8 @@ def cargar_usuarios(matriz_usuario):
     matriz_usuario.append(usuario)
     return matriz_usuario
 
-#Para probarlo 
+
+# Para probarlo
 if __name__ == "__main__":
     cargar_usuarios(usuarios)
     print(usuarios)
