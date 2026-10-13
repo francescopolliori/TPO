@@ -5,7 +5,7 @@ from listas_programas import programas, canales_validos
 
 def validar_edad(edad):
     """Valida que la edad sea un número entero positivo."""
-    if edad < 0:
+    if edad <= 0:
         return -1
     else:
         return edad
@@ -16,33 +16,35 @@ def horario_a_minutos(horario):
     horas, minutos = map(int, horario.split(":"))
     return horas * 60 + minutos
 
+def pedir_edad():
+    """Pide la edad hasta que sea un entero positivo."""
+    while True:
+        try:
+            edad = int(input("Ingrese la edad: "))
+        except ValueError:
+            print("Debe ingresar un número entero.")
+            continue
+        if validar_edad(edad) != -1:
+            return edad
+        print("Edad inválida.")
 
 def cargar_usuarios(matriz_usuario):
     """Función para cargar usuarios en la matriz de usuarios."""
     usuario=[]
     nombre=input("Ingrese el nombre y apellido: ")
-    edad=int(input("Ingrese la edad: "))
-    edad=validar_edad(edad)
-    while edad==-1:
-        edad=int(input("Edad invalida, ingrese la edad nuevamente: "))
-        edad=validar_edad(edad)
+    edad = pedir_edad()
         
 
     prog = seleccionar_programa(edad)
 
-    indice_streamer = -1
-    for i in range(len(programas)):
-        if programas[i] == prog:
-            indice_streamer = i
-            break
-        
+    indice_streamer = programas.index(prog)
+
     nombre_canal = prog[2].lower()
-    indice_canal = -1
-    
-    for i in range(len(canales_validos)):
-        if canales_validos[i] == nombre_canal:
-            indice_canal = i
-            break
+    try:
+        indice_canal = canales_validos.index(nombre_canal)
+    except ValueError:
+        print(f"Canal '{nombre_canal}' no encontrado en canales_validos.")
+        return matriz_usuario  # cancela la carga en vez de guardar un -1
 
     inicio_horario = input("Ingrese el inicio de su horario recurrente(HH:MM): ")
     while not validar_horario(inicio_horario):
