@@ -4,9 +4,6 @@ from listas_usuarios import usuarios
 from menu_seleccion import seleccionar_programa
 from listas_programas import programas, canales_validos
 
-PATRON_EDAD = r"[0-9]+"
-PATRON_HORARIO = r"([01][0-9]|2[0-3]):([0-5][0-9])"
-
 
 def validar_edad(edad):
     """Valida que la edad sea un entero entre 1 y 120. Devuelve -1 si no lo es."""
@@ -22,7 +19,6 @@ def validar_nombre(nombre):
     if len(palabras) < 2:
         return False
     for palabra in palabras:
-        # se permiten guiones y apóstrofes dentro de una palabra (ej: Pérez-Gómez, O'Brien)
         if not palabra.replace("-", "").replace("'", "").isalpha():
             return False
     return True
@@ -30,16 +26,15 @@ def validar_nombre(nombre):
 
 def validar_horario(horario):
     """Valida el formato HH:MM (00:00 a 23:59), con dos dígitos en cada parte."""
-    return re.fullmatch(PATRON_HORARIO, horario) is not None
+    return re.match(r"^([01][0-9]|2[0-3]):([0-5][0-9])$", horario) is not None
 
-
-def horario_a_minutos(horario):
-    MINUTOS_DIA = 24 * 60
 
 def horario_a_minutos(horario, referencia=None):
     """Convierte HH:MM a minutos. Si el horario es menor o igual
     que la referencia, lo interpreta como del día siguiente.
     """
+    MINUTOS_DIA = 24 * 60
+
     if not validar_horario(horario):
         raise ValueError(f"Horario '{horario}' inválido.")
 
@@ -72,7 +67,7 @@ def pedir_edad():
     """Pide la edad hasta que sea un entero válido (1 a 120)."""
     while True:
         texto = input("Ingrese la edad: ").strip()
-        if not re.fullmatch(PATRON_EDAD, texto):
+        if not re.match(r"^[0-9]+$", texto):
             print("Debe ingresar un número entero.")
             continue
         edad = int(texto)
@@ -93,6 +88,20 @@ def pedir_horario(mensaje, minimo=None):
             print("Horario inválido. Use el formato HH:MM (ej: 09:30).")
 
 
+def pedir_horario_recurrente():
+    """Pide y valida el inicio y el fin de un horario recurrente."""
+    inicio_horario = input("Ingrese el inicio de su horario recurrente(HH:MM): ").strip()
+    while not validar_horario(inicio_horario):
+        inicio_horario = input("Horario invalido, ingrese el inicio de su horario recurrente nuevamente(HH:MM): ").strip()
+
+    fin_horario = input("Ingrese el fin de su horario recurrente(HH:MM): ").strip()
+    while True:
+        if (validar_horario(fin_horario) and horario_a_minutos(fin_horario, inicio_horario) > horario_a_minutos(inicio_horario)):
+            return inicio_horario, fin_horario
+        fin_horario = input(
+            "Horario invalido, ingrese el fin de su horario recurrente nuevamente (HH:MM): ").strip()
+
+
 def cargar_usuarios(matriz_usuario):
     """Función para cargar usuarios en la matriz de usuarios."""
     usuario = []
@@ -111,15 +120,7 @@ def cargar_usuarios(matriz_usuario):
             indice_canal = i
             break
 
-    inicio_horario = input("Ingrese el inicio de su horario recurrente(HH:MM): ")
-    while not validar_horario(inicio_horario):
-        inicio_horario = input("Horario invalido, ingrese el inicio de su horario recurrente nuevamente(HH:MM): ")
-
-    fin_horario = input("Ingrese el fin de su horario recurrente(HH:MM): ")
-    while True:
-        if validar_horario(fin_horario) and horario_a_minutos(fin_horario, inicio_horario) > horario_a_minutos(inicio_horario):
-            break
-        fin_horario = input("Horario invalido, ingrese el fin de su horario recurrente nuevamente (HH:MM): ")
+    inicio_horario, fin_horario = pedir_horario_recurrente()
 
     usuario.append(len(matriz_usuario) + 1)
     usuario.append(nombre)
