@@ -1,0 +1,98 @@
+[
+  {
+    "nombre_programa": "Nadie Dice Nada",
+    "conductor": "Nicolas Occhiato",
+    "plataforma": "LUZU TV",
+    "dia": "Lunes",
+    "hora_inicio": "10:00",
+    "genero": "Entretenimiento"
+  },
+  {
+    "nombre_programa": "Antes Que Nadie",
+    "conductor": "Diego Leuco",
+    "plataforma": "LUZU TV",
+    "dia": "Martes",
+    "hora_inicio": "08:00",
+    "genero": "Actualidad"
+  },
+  {
+    "nombre_programa": "Sone Que Volaba",
+    "conductor": "Migue Granados",
+    "plataforma": "OLGA",
+    "dia": "Lunes",
+    "hora_inicio": "10:00",
+    "genero": "Entretenimiento"
+  },
+  {
+    "nombre_programa": "Seria Increible",
+    "conductor": "Nati Jota",
+    "plataforma": "OLGA",
+    "dia": "Martes",
+    "hora_inicio": "09:00",
+    "genero": "Humor"
+  },
+  {
+    "nombre_programa": "Paren La Mano",
+    "conductor": "Luquitas Rodriguez",
+    "plataforma": "VORTERIX",
+    "dia": "Miercoles",
+    "hora_inicio": "21:00",
+    "genero": "Deporte"
+  },
+  {
+    "nombre_programa": "Y Que?",
+    "conductor": "Guillermo Aquino",
+    "plataforma": "VORTERIX",
+    "dia": "Jueves",
+    "hora_inicio": "10:00",
+    "genero": "Humor"
+  },
+  {
+    "nombre_programa": "Industria Nacional",
+    "conductor": "Pedro Rosemblat",
+    "plataforma": "GELATINA",
+    "dia": "Viernes",
+    "hora_inicio": "08:00",
+    "genero": "Actualidad"
+  },
+  {
+    "nombre_programa": "412",
+    "conductor": "Davo Xeneize",
+    "plataforma": "KICK",
+    "dia": "Viernes",
+    "hora_inicio": "21:00",
+    "genero": "Deporte"
+  },
+  {
+    "nombre_programa": "La Faraona",
+    "conductor": "Martin Cirio",
+    "plataforma": "TWITCH",
+    "dia": "Sabado",
+    "hora_inicio": "17:00",
+    "genero": "Espectaculo"
+  },
+  {
+    "nombre_programa": "Ibai Llanos",
+    "conductor": "Ibai",
+    "plataforma": "TWITCH",
+    "dia": "Sabado",
+    "hora_inicio": "17:00",
+    "genero": "Espectaculo"
+  },
+  {
+    "nombre_programa": "Luli Pampin",
+    "conductor": "Luli Pampin",
+    "plataforma": "TWITCH",
+    "dia": "Domingo",
+    "hora_inicio": "09:00",
+    "genero": "Infantil"
+  },
+  {
+    "nombre_programa": "Kidddle",
+    "conductor": "Kido",
+    "plataforma": "TWITCH",
+    "dia": "Miercoles",
+    "hora_inicio": "09:00",
+    "genero": "Infantil"
+  }
+]
