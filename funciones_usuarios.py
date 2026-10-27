@@ -122,7 +122,7 @@ def cargar_usuarios(matriz_usuario):
 
     inicio_horario, fin_horario = pedir_horario_recurrente()
 
-    usuario.append(len(matriz_usuario) + 1)
+    usuario.append(len(matriz_usuario) + 1) #aca hay que hacer una funcion que agregue esto al archivo
     usuario.append(nombre)
     usuario.append(edad)
     usuario.append(indice_canal)
