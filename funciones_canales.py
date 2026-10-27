@@ -1,9 +1,9 @@
 from functools import reduce
-from listas_programas import programas, DIAS_VALIDOS, canales_validos
+from listas_programas import programas,  canales_validos
 
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
-
+dias_validos = ( "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
 
 #VALIDACIONES
 def validar_horario(horario):
@@ -19,7 +19,7 @@ def validar_horario(horario):
 
 def validar_dia(dia):
     """Valida que el día sea uno de los días válidos de la semana."""
-    return dia.lower() in DIAS_VALIDOS
+    return dia.lower() in dias_validos
 
 
 def validar_texto(texto):
@@ -38,9 +38,6 @@ def validar_texto(texto):
     return True
 
 
-def validar_canal(canal):
-    """Valida que el canal esté dentro de la lista de canales conocidos."""
-    return canal.lower() in canales_validos
 
 
 # ALTA / BAJA / MODIFICACIÓN 
@@ -52,7 +49,7 @@ def agregar_programa(programas, nombre, streamer, canal, dia, horario, categoria
     if not validar_texto(streamer):
         print(f"Error: streamer '{streamer}' inválido.")
         return programas
-    if not validar_canal(canal):
+    if not validar_texto(canal):
         print(f"Error: canal '{canal}' inválido.")
         return programas
     if not validar_dia(dia):
