@@ -29,8 +29,8 @@ def validar_texto(texto):
     if not texto:
         return False
     for caracter in texto:
-        es_letra_minuscula = "a" <= caracter <= "z"
-        es_letra_mayuscula = "A" <= caracter <= "Z"
+        es_letra_minuscula = ("a" <= caracter <= "z") or caracter in "aáéíóúñ"
+        es_letra_mayuscula = ("A" <= caracter <= "Z") or caracter in "AÁÉÍÓÚÑ"
         es_numero = "0" <= caracter <= "9"
         es_espacio = caracter == " "
         if not (es_letra_minuscula or es_letra_mayuscula or es_numero or es_espacio):
