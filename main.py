@@ -1,8 +1,17 @@
+import csv
 from funciones_canales import menu_demostraciones
 from funciones_usuarios import cargar_usuarios
 from administrador import imprimir_estadisticas
 from listas_usuarios import usuarios
 from listas_programas import programas, canales_validos
+
+def generar_archivo(nombre_archivo):
+    # 1. Verificar existencia / Crear vacío si no existe
+    try:
+        with open(nombre_archivo, "x", newline="", encoding="utf-8"):
+            pass
+    except FileExistsError:
+        pass  # El archivo ya existe, no hacemos nada
 
 def menu_principal():
     """Menú interactivo principal que integra todas las funcionalidades."""
@@ -49,4 +58,6 @@ def menu_principal():
             print("\nOpción inválida. Por favor, intente nuevamente ingresando un número del 1 al 4.")
 
 if __name__ == "__main__":
-    menu_principal()
+    generar_archivo("lista_usuarios.csv")
+    generar_archivo("lista_programas.csv")
+    #menu_principal()
