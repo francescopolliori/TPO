@@ -152,19 +152,27 @@ def concatenar_nombres():
 
 
 #ESTADÍSTICAS
-def detectar_choques_horario(programas):
+def detectar_choques_horario():
     """Devuelve pares de programas que van el mismo día y horario."""
+
+    with open("lista_programas.json", "r", encoding="utf-8") as archivo:
+        programas = json.load(archivo)
+
     choques = []
+
     for i in range(len(programas)):
         for j in range(i + 1, len(programas)):
-            if (programas[i][DIA] == programas[j][DIA]
-                    and programas[i][HORARIO] == programas[j][HORARIO]):
-                choques.append((
-                    programas[i][NOMBRE], programas[j][NOMBRE],
-                    programas[i][DIA], programas[i][HORARIO]
-                ))
-    return choques
+            if (programas[i]["dia"] == programas[j]["dia"]
+                    and programas[i]["hora_inicio"] == programas[j]["hora_inicio"]):
 
+                choques.append((
+                    programas[i]["nombre_programa"],
+                    programas[j]["nombre_programa"],
+                    programas[i]["dia"],
+                    programas[i]["hora_inicio"]
+                ))
+
+    return choques
 
 # MENÚ DE DEMOSTRACIÓN DE FUNCIONES
 def menu_demostraciones():
@@ -369,7 +377,7 @@ def menu_demostraciones():
             elif seleccion == 10:
                 print("=== CHOQUES DE HORARIO ===")
 
-                choques = detectar_choques_horario(programas)
+                choques = detectar_choques_horario()
 
                 if len(choques) == 0:
                     print("No se encontraron choques de horario.")
