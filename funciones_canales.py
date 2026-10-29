@@ -1,3 +1,4 @@
+import json
 from functools import reduce
 from listas_programas import programas,  canales_validos
 
@@ -130,14 +131,24 @@ def canales_en_mayusculas(programas):
 
 
 #ACUMULACIONES
-def total_programas(programas):
-    """Cuenta el total de programas usando reduce."""
+def total_programas():
+    """Cuenta el total de programas del JSON usando reduce."""
+    with open("lista_programas.json", "r", encoding="utf-8") as archivo:
+        programas = json.load(archivo)
+
     return reduce(lambda acc, p: acc + 1, programas, 0)
 
 
-def concatenar_nombres(programas):
-    """Concatena todos los nombres de programas en un solo string."""
-    return reduce(lambda acc, p: acc + p[NOMBRE] + " | ", programas, "")
+def concatenar_nombres():
+    """Concatena los nombres de los programas del JSON usando reduce."""
+    with open("lista_programas.json", "r", encoding="utf-8") as archivo:
+        programas = json.load(archivo)
+
+    return reduce(
+        lambda acc, p: acc + p["nombre_programa"] + " | ",
+        programas,
+        ""
+    )
 
 
 #ESTADÍSTICAS
@@ -347,12 +358,12 @@ def menu_demostraciones():
             # TOTAL DE PROGRAMAS
             elif seleccion == 8:
                 print("=== TOTAL DE PROGRAMAS (REDUCE) ===")
-                print(total_programas(programas))
+                print(total_programas())
 
             # CONCATENAR NOMBRES
             elif seleccion == 9:
                 print("=== CONCATENACIÓN DE NOMBRES (REDUCE) ===")
-                print(concatenar_nombres(programas))
+                print(concatenar_nombres())
 
             # CHOQUES DE HORARIO
             elif seleccion == 10:
