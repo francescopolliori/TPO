@@ -1,13 +1,23 @@
-from listas_programas import programas
+import json
 
-def seleccionar_programa(edad, solo_conductor=False):
+def cargar_programas():
+    """Carga y devuelve la lista de programas desde un archivo JSON."""
+    try:
+        with open("lista_programas.json", "r", encoding="utf-8") as archivo:
+            return json.load(archivo)
+    except FileNotFoundError:
+        print(f"Error: No se encontró el archivo 'lista_programas.json'.")
+        return []
+
+def seleccionar_programa(programas, edad, solo_conductor=False):
     """Muestra un menú de selección de programas o de conductores según la 
-    edad del usuario y devuelve el índice del programa seleccionado."""
-    # 1. Filtramos por edad
+    edad del usuario y devuelve el programa seleccionado (diccionario)."""
+    
+    # 1. Filtramos por edad usando la clave 'genero'
     if edad >= 18:
         programas_filtrados = programas
     else:
-        programas_filtrados = [p for p in programas if p[5] == "Infantil"]
+        programas_filtrados = [p for p in programas if p.get("genero") == "Infantil"]
         
     seleccion = 0
     total = len(programas_filtrados)
@@ -31,14 +41,14 @@ def seleccionar_programa(edad, solo_conductor=False):
             
         print("-" * ancho)
         
-        # 4. Filas dinámicas iterando sobre la lista filtrada
+        # 4. Filas dinámicas iterando sobre los diccionarios
         for i, p in enumerate(programas_filtrados):
             prefijo = " ➔ " if i == seleccion else "   "
             
             if solo_conductor:
-                print(f"{prefijo} {i:>3} | {p[1]:<20}")
+                print(f"{prefijo} {i:>3} | {p['conductor']:<20}")
             else:
-                print(f"{prefijo} {i:>3} | {p[0]:<20} | {p[1]:<20} | {p[2]:<10} | {p[3]:<10} | {p[4]:<5} | {p[5]:<15}")
+                print(f"{prefijo} {i:>3} | {p['nombre_programa']:<20} | {p['conductor']:<20} | {p['plataforma']:<10} | {p['dia']:<10} | {p['hora_inicio']:<5} | {p['genero']:<15}")
                 
         print("=" * ancho)
         
@@ -50,16 +60,22 @@ def seleccionar_programa(edad, solo_conductor=False):
             seleccion = (seleccion + 1) % total
         elif accion == '':
             return programas_filtrados[seleccion]
-    
+
 
 if __name__ == "__main__":
-    # Si se ejecuta directamente, mostramos el menú de selección
-    print("Ejecutando menú de selección de programas...\n")
-    # Ejecutamos la función y guardamos el índice devuelto
-    posicion = seleccionar_programa(18, solo_conductor=True) # Cambiar a False si quieres ver todos los detalles
+    # Cargamos los datos del archivo JSON
+    programas = cargar_programas()
 
-    # Limpiamos pantalla por última vez para mostrar el resultado
-    print("\033[H\033[2J" + "\n" * 40)
-    print(f"¡Programa seleccionado correctamente!")
-    print(f"Posición devuelta (índice en la lista): {posicion}")
-    print(f"Corresponde a: {programas[posicion][0]} (Plataforma: {programas[posicion][2]})")
+    if programas:
+        print("Ejecutando menú de selección de programas...\n")
+        
+        # Ejecutamos la función pasando la lista cargada
+        programa_seleccionado = seleccionar_programa(programas, edad=18, solo_conductor=False)
+
+        # Limpiamos pantalla para mostrar el resultado
+        print("\033[H\033[2J" + "\n" * 40)
+        if programa_seleccionado:
+            print("¡Programa seleccionado correctamente!")
+            print(f"Nombre: {programa_seleccionado['nombre_programa']}")
+            print(f"Conductor: {programa_seleccionado['conductor']}")
+            print(f"Plataforma: {programa_seleccionado['plataforma']}")

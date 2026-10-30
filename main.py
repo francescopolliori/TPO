@@ -1,18 +1,16 @@
-import csv
-from funciones_canales import menu_demostraciones
+import json
+from funciones_canales import menu_demostraciones, canales_validos
 from funciones_usuarios import cargar_usuarios
 from administrador import imprimir_estadisticas
 from listas_usuarios import usuarios
-from listas_programas import programas, canales_validos
-
-import json
+from listas_programas import programas
 
 def generar_archivo(nombre_archivo):
     try:
         # Intenta crear el archivo en modo 'x'
         with open(nombre_archivo, "x", encoding="utf-8") as archivo:
-            # Inicializamos el archivo con un JSON válido (una lista vacía)
-            json.dump([], archivo, ensure_ascii=False, indent=4)
+            # Inicializamos el archivo con un JSON válido (un diccionario vacío)
+            json.dump({}, archivo, ensure_ascii=False, indent=4)
         print(f"Archivo '{nombre_archivo}' creado e inicializado correctamente.")
 
     except FileExistsError:
@@ -67,3 +65,4 @@ def menu_principal():
 if __name__ == "__main__":
     generar_archivo("lista_usuarios.json")
     generar_archivo("lista_programas.json")
+    #menu_principal() 

@@ -1,5 +1,4 @@
 import json
-
 from functools import reduce
 from listas_programas import programas,  canales_validos
 
@@ -149,30 +148,48 @@ def canales_en_mayusculas(programas,nombre_archivo="canales_mayusculas.json"):
     return resultados
 
 #ACUMULACIONES
-def total_programas(programas):
-    """Cuenta el total de programas usando reduce."""
+def total_programas():
+    """Cuenta el total de programas del JSON usando reduce."""
+    with open("lista_programas.json", "r", encoding="utf-8") as archivo:
+        programas = json.load(archivo)
+
     return reduce(lambda acc, p: acc + 1, programas, 0)
 
 
-def concatenar_nombres(programas):
-    """Concatena todos los nombres de programas en un solo string."""
-    return reduce(lambda acc, p: acc + p[NOMBRE] + " | ", programas, "")
+def concatenar_nombres():
+    """Concatena los nombres de los programas del JSON usando reduce."""
+    with open("lista_programas.json", "r", encoding="utf-8") as archivo:
+        programas = json.load(archivo)
+
+    return reduce(
+        lambda acc, p: acc + p["nombre_programa"] + " | ",
+        programas,
+        ""
+    )
 
 
 #ESTADÍSTICAS
-def detectar_choques_horario(programas):
+def detectar_choques_horario():
     """Devuelve pares de programas que van el mismo día y horario."""
+
+    with open("lista_programas.json", "r", encoding="utf-8") as archivo:
+        programas = json.load(archivo)
+
     choques = []
+
     for i in range(len(programas)):
         for j in range(i + 1, len(programas)):
-            if (programas[i][DIA] == programas[j][DIA]
-                    and programas[i][HORARIO] == programas[j][HORARIO]):
-                choques.append((
-                    programas[i][NOMBRE], programas[j][NOMBRE],
-                    programas[i][DIA], programas[i][HORARIO]
-                ))
-    return choques
+            if (programas[i]["dia"] == programas[j]["dia"]
+                    and programas[i]["hora_inicio"] == programas[j]["hora_inicio"]):
 
+                choques.append((
+                    programas[i]["nombre_programa"],
+                    programas[j]["nombre_programa"],
+                    programas[i]["dia"],
+                    programas[i]["hora_inicio"]
+                ))
+
+    return choques
 
 # MENÚ DE DEMOSTRACIÓN DE FUNCIONES
 def menu_demostraciones():
@@ -366,18 +383,18 @@ def menu_demostraciones():
             # TOTAL DE PROGRAMAS
             elif seleccion == 8:
                 print("=== TOTAL DE PROGRAMAS (REDUCE) ===")
-                print(total_programas(programas))
+                print(total_programas())
 
             # CONCATENAR NOMBRES
             elif seleccion == 9:
                 print("=== CONCATENACIÓN DE NOMBRES (REDUCE) ===")
-                print(concatenar_nombres(programas))
+                print(concatenar_nombres())
 
             # CHOQUES DE HORARIO
             elif seleccion == 10:
                 print("=== CHOQUES DE HORARIO ===")
 
-                choques = detectar_choques_horario(programas)
+                choques = detectar_choques_horario()
 
                 if len(choques) == 0:
                     print("No se encontraron choques de horario.")
