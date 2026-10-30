@@ -1,3 +1,5 @@
+import json
+
 from functools import reduce
 from listas_programas import programas,  canales_validos
 
@@ -110,24 +112,41 @@ def imprimir_programas(programas):
 
 
 #BÚSQUEDAS
-def buscar_por_canal(programas, canal):
+def buscar_por_canal(programas, canal, nombre_archivo="lista_programa.json"):
     """Búsqueda exacta: encuentra todos los programas de un canal específico."""
-    return list(filter(lambda p: p[CANAL].lower() == canal.lower(), programas))
+    resultados =list(filter(lambda p: p[CANAL].lower() == canal.lower(), programas))
 
-def buscar_por_streamer(programas, streamer):
+    with open(nombre_archivo,"w", encoding="utf-8") as archivo:
+        json.dump(resultados, archivo, indent=4, ensure_ascii=False)
+   
+    return resultados
+
+def buscar_por_streamer(programas, streamer,nombre_archivo="busqueda_streamer.json"):
     """Búsqueda parcial: encuentra el streamer aunque escriban solo una parte del nombre."""
-    return list(filter(lambda p: streamer.lower() in p[STREAMER].lower(), programas))
+    resultados = list(filter(lambda p: streamer.lower() in p[STREAMER].lower(), programas))
+
+    with open(nombre_archivo, "w", encoding="utf-8") as archivo:
+        json.dump(resultados,archivo, indent=4, ensure_ascii=False)
+
+    return resultados
 
 #TRANSFORMACIONES
-def obtener_nombres(programas):
+def obtener_nombres(programas,nombre_archivo="nombres_programas.json"):
     """Devuelve una lista solo con los nombres de los programas."""
-    return list(map(lambda p: p[NOMBRE], programas))
+    resultados= list(map(lambda p: p[NOMBRE], programas))
 
+    with open(nombre_archivo, "w", encoding="utf-8") as archivo:
+        json.dump(resultados, archivo, indent=4, ensure_ascii=False)
 
-def canales_en_mayusculas(programas):
+    return resultados   
+
+def canales_en_mayusculas(programas,nombre_archivo="canales_mayusculas.json"):
     """Devuelve la lista de canales, todos en mayúsculas."""
-    return list(map(lambda p: p[CANAL].upper(), programas))
+    resultados = list(map(lambda p: p[CANAL].upper(), programas))
+    with open(nombre_archivo, "w", encoding="utf-8") as archivo:
+        json.dump(resultados, archivo, indent=4, ensure_ascii=False)
 
+    return resultados
 
 #ACUMULACIONES
 def total_programas(programas):
