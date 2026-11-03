@@ -1,6 +1,6 @@
 import json
 from functools import reduce
-from listas_programas import programas,  canales_validos
+
 
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
