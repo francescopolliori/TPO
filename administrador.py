@@ -1,5 +1,3 @@
-from listas_usuarios import usuarios
-from listas_programas import programas, canales_validos
 from funciones_canales import STREAMER, CANAL, CATEGORIA, HORARIO
 
 # Indices de la matriz de usuarios (ver listas_usuarios.py)

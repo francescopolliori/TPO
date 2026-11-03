@@ -3,7 +3,7 @@ import re
 from TPO.administrador import ID
 from listas_usuarios import usuarios
 from menu_seleccion import seleccionar_programa
-from listas_programas import programas, canales_validos
+
 
 
 def validar_edad(edad):
