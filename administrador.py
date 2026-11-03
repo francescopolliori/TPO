@@ -119,21 +119,28 @@ def mostrar_tabla_usuarios(usuarios):
 
     print("=" * ancho + "\n")
 
-def imprimir_estadisticas(usuarios, programas):
-    """Imprime el reporte completo con un formato moderno."""
+def imprimir_estadisticas():
+    """Imprime el reporte completo cargando los datos internamente desde los JSON."""
+    # 1. Cargamos los datos aquí adentro
+    usuarios = cargar_json("lista_usuarios.json")
+    programas = cargar_json("lista_programas.json")
+
+    # Si hubo un error al cargar y devolvieron listas vacías, cortamos la ejecución
     if not usuarios or not programas:
         print("Faltan datos para procesar el reporte.")
         return
 
+    # 2. Hacemos los análisis
     mejor_canal, conteo_canales = analizar_canales(usuarios)
     mejor_cat, conteo_cat = analizar_categorias(usuarios, programas)
     mejor_streamer, conteo_streamers = analizar_streamers(usuarios)
     mejor_horario, conteo_horarios = analizar_horarios(usuarios)
     streamer_pico = streamer_con_pico_de_vistas(usuarios, programas)
 
-    print("\n" + "==" * 15)
+    # 3. Imprimimos los resultados
+    print("\n" + "===" * 15)
     print(f"{'=== REPORTE DE ESTADÍSTICAS GLOBALES ===':^45}")
-    print("==" * 15 + "\n")
+    print("===" * 15 + "\n")
     
     print(f"Total de usuarios registrados : {len(usuarios)}")
     print(f"Canal más visto (suscritos)   : {mejor_canal}")
@@ -145,9 +152,9 @@ def imprimir_estadisticas(usuarios, programas):
     # Función interna para imprimir los desgloses
     def mostrar_desglose(titulo, diccionario, sufijo):
         print("\n" + "-" * 40)
-        print(f" DETALLE: {titulo}")
+        print(f"DETALLE: {titulo}")
         
-        # sorted() es una función nativa de Python, ordena de mayor a menor según el valor
+        # sorted() ordena de mayor a menor según el valor
         items_ordenados = sorted(diccionario.items(), key=lambda x: x[1], reverse=True)
         for clave, cantidad in items_ordenados:
             print(f"    • {clave:<20}: {cantidad} {sufijo}")
@@ -157,15 +164,11 @@ def imprimir_estadisticas(usuarios, programas):
     mostrar_desglose("POR CANAL SUSCRITO", conteo_canales, "suscripciones")
     mostrar_desglose("POR HORARIO", conteo_horarios, "vistas")
 
-    # Imprimimos la tabla final usando directo el JSON
+    # Imprimimos la tabla final
     mostrar_tabla_usuarios(usuarios)
 
 
-# ==========================================
-# EJECUCIÓN PRINCIPAL
-# ==========================================
-if __name__ == "__main__":
-    lista_usuarios = cargar_json("lista_usuarios.json")
-    lista_programas = cargar_json("lista_programas.json")
 
-    imprimir_estadisticas(lista_usuarios, lista_programas)
+if __name__ == "__main__":
+    # Ahora la llamada es limpia, sin pasarle ningún parámetro
+    imprimir_estadisticas()
