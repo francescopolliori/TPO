@@ -1,8 +1,7 @@
 import re
+import json
 
-from TPO.administrador import ID
-from listas_usuarios import usuarios
-from menu_seleccion import seleccionar_programa
+from menu_seleccion import cargar_programas, seleccionar_programa
 
 
 
@@ -104,39 +103,40 @@ def pedir_horario_recurrente():
 
 
 
-def cargar_usuarios(matriz_usuario):
-    """Función para cargar usuarios en la matriz de usuarios."""
+def cargar_usuarios(usuarios):
+    """Carga un usuario y lo guarda en lista_usuarios.json."""
+    programas = cargar_programas()
+    if not programas:
+        print("No hay programas disponibles para registrar el usuario.")
+        return usuarios
+
     nombre = pedir_nombre()
     edad = pedir_edad()
 
-    prog = seleccionar_programa(edad)
-
-    indice_streamer = programas.index(prog)
-
-    nombre_canal = prog[2].lower()
-    indice_canal = -1
-    
-    for i in range(len(canales_validos)):
-        if canales_validos[i] == nombre_canal:
-            indice_canal = i
-            break
+    prog = seleccionar_programa(programas, edad)
+    if prog is None:
+        return usuarios
 
     inicio_horario, fin_horario = pedir_horario_recurrente()
 
     usuario = {
-        "id": ID, 
+        "id": max((u.get("id", 0) for u in usuarios), default=0) + 1,
         "nombre": nombre, 
         "edad": edad, 
-        "suscripcion": prog[0], 
-        "streamer_favorito": prog[1], 
+        "suscripcion": prog["nombre_programa"],
+        "streamer_favorito": prog["conductor"],
         "horario_recurrentes": [inicio_horario, fin_horario]
-        }
+    }
 
-    matriz_usuario.append(usuario)
-    return matriz_usuario
+    usuarios.append(usuario)
+    with open("lista_usuarios.json", "w", encoding="utf-8") as archivo:
+        json.dump(usuarios, archivo, indent=4, ensure_ascii=False)
+    return usuarios
 
 
 # Para probarlo
 if __name__ == "__main__":
+    with open("lista_usuarios.json", "r", encoding="utf-8") as archivo:
+        usuarios = json.load(archivo)
     cargar_usuarios(usuarios)
     print(usuarios)
