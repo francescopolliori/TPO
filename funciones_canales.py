@@ -251,8 +251,14 @@ def detectar_choques_horario():
 
     return choques
 
+def abrir_json(ruta):
+    """Abre un archivo JSON y devuelve su contenido como un diccionario."""
+    with open(ruta, "r", encoding="utf-8") as archivo:
+        return json.load(archivo)
+
 # MENÚ DE DEMOSTRACIÓN DE FUNCIONES
 def menu_demostraciones():
+
     opciones = [
         "Agregar programa",
         "Eliminar programa",
@@ -307,7 +313,8 @@ def menu_demostraciones():
                 horario = input("Ingrese el horario (HH:MM): ")
                 categoria = input("Ingrese la categoría: ")
 
-                cantidad_anterior = len(programas)
+                cantidad_anterior = len(abrir_json("lista_programas.json"))
+                programas=abrir_json("lista_programas.json")["programas"]
 
                 agregar_programa(
                     programas,
@@ -380,13 +387,14 @@ def menu_demostraciones():
                 print("=== LISTADO COMPLETO ===")
                 imprimir_programas(programas)
 
+
             # BÚSQUEDA POR CANAL
             elif seleccion == 4:
                 print("=== BÚSQUEDA POR CANAL ===")
 
                 print("Canales disponibles:")
 
-                for canal in canales_validos:
+                for canal in programas:
                     print("- " + canal.upper())
 
                 canal_buscado = input(
