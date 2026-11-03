@@ -3,9 +3,7 @@ import json
 RUTA_JSON = "programas.json"
 DIAS_VALIDOS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
 
-# ==========================================
-# 1. FUNCIONES BASE Y ARCHIVOS
-# ==========================================
+#FUNCIONES BASE Y ARCHIVOS
 def limpiar_pantalla():
     """Limpia la consola usando códigos ANSI sin depender del sistema operativo (librería os)."""
     print("\033[H\033[2J", end="")
@@ -31,9 +29,8 @@ def normalizar(texto):
         texto = texto.replace(a, b)
     return texto
 
-# ==========================================
-# 2. VALIDACIONES
-# ==========================================
+#VALIDACIONES
+
 def validar_horario(horario):
     horario = horario.strip()
     if len(horario) != 5 or horario[2] != ":":
@@ -46,9 +43,7 @@ def validar_horario(horario):
 def validar_dia(dia):
     return normalizar(dia) in DIAS_VALIDOS
 
-# ==========================================
-# 3. LÓGICA DE PROGRAMAS (CRUD)
-# ==========================================
+#LÓGICA DE PROGRAMAS (CRUD)
 def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
     if not validar_dia(dia):
         raise ValueError("Día inválido.")
@@ -99,9 +94,7 @@ def actualizar_horario(ruta, nombre_buscar, nuevo_horario):
             return True
     return False
 
-# ==========================================
-# 4. REPORTES Y BÚSQUEDAS (Python puro)
-# ==========================================
+#REPORTES Y BÚSQUEDAS
 def imprimir_programas(programas):
     """Imprime una tabla elegante."""
     if not programas:
@@ -133,9 +126,8 @@ def detectar_choques_horario(programas):
                 choques.append((a["nombre_programa"], b["nombre_programa"], a["dia"], a["hora_inicio"]))
     return choques
 
-# ==========================================
-# 5. MENÚ INTERACTIVO
-# ==========================================
+
+# MENÚ INTERACTIVO
 def menu_demostraciones():
     opciones = [
         "Agregar programa", 
