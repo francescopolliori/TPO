@@ -20,5 +20,16 @@
             "14:00",
             "15:00"
         ]
+    },
+    {
+        "id": 3,
+        "nombre": "Fran Po",
+        "edad": 44,
+        "suscripcion": "Industria Nacional",
+        "streamer_favorito": "Pedro Rosemblat",
+        "horario_recurrentes": [
+            "23:59",
+            "00:00"
+        ]
     }
 ]
