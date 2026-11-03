@@ -49,7 +49,7 @@ def menu_principal():
         # OPCIÓN 3 (una sola vez)
         elif opcion == '3':
             print("\n\033[H\033[2J") # Limpia la consola 
-            imprimir_estadisticas(usuarios, programas, canales_validos)
+            imprimir_estadisticas()
             input("\nPresione ENTER para volver al menú principal...")
             
         # OPCIÓN 4: Salir
