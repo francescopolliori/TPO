@@ -43,19 +43,72 @@ def validar_horario(horario):
 def validar_dia(dia):
     return normalizar(dia) in DIAS_VALIDOS
 
+def validar_genero(categoria):
+    """Valida que el género sea correcto, carácter por carácter."""
+
+    generos_validos = [
+        "Entretenimiento",
+        "Actualidad",
+        "Humor",
+        "Deporte",
+        "Espectaculo",
+        "Infantil"
+    ]
+
+    categoria = categoria.strip()
+
+    if not categoria:
+        return False
+
+    for letra in categoria:
+        if not (letra.isalpha() or letra == " "):
+            return False
+
+    return normalizar(categoria) in [
+        normalizar(genero) for genero in generos_validos
+    ]    
+
 #LÓGICA DE PROGRAMAS (CRUD)
 def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
+
+    # Validamos que los campos no estén vacíos
+    if not nombre.strip():
+        raise ValueError("El nombre del programa no puede estar vacío.")
+
+    if not streamer.strip():
+        raise ValueError("El conductor no puede estar vacío.")
+
+    if not canal.strip():
+        raise ValueError("La plataforma no puede estar vacía.")
+
+    # Validamos el día
     if not validar_dia(dia):
         raise ValueError("Día inválido.")
+
+    # Validamos el horario
     if not validar_horario(horario):
         raise ValueError("Horario inválido. Use formato HH:MM.")
 
+    # Validamos el género
+    if not validar_genero(categoria):
+        raise ValueError("Género inválido o no permitido.")
+
+    # Cargamos los programas existentes
     programas = cargar_json(ruta)
-    
+
+    # Comprobamos que no exista otro programa con el mismo nombre
+    for p in programas:
+        if normalizar(p["nombre_programa"]) == normalizar(nombre):
+            raise ValueError("Ya existe un programa con ese nombre.")
+
     # Comprobamos si el canal es nuevo
-    canales_existentes = {normalizar(p["plataforma"]) for p in programas}
+    canales_existentes = {
+        normalizar(p["plataforma"]) for p in programas
+    }
+
     canal_nuevo = normalizar(canal) not in canales_existentes
 
+    # Creamos el nuevo programa
     nuevo_programa = {
         "nombre_programa": nombre.strip(),
         "conductor": streamer.strip(),
@@ -64,9 +117,11 @@ def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
         "hora_inicio": horario.strip(),
         "genero": categoria.strip()
     }
-    
+
+    # Agregamos el programa y guardamos el JSON
     programas.append(nuevo_programa)
     guardar_json(ruta, programas)
+
     return canal_nuevo
 
 def eliminar_programa(ruta, nombre_buscar):
