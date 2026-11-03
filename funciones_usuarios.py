@@ -76,18 +76,6 @@ def pedir_edad():
         print("Edad inválida. Debe estar entre 1 y 120.")
 
 
-def pedir_horario(mensaje, minimo=None):
-    """Pide un horario HH:MM; si se indica 'minimo' (en minutos), debe ser posterior."""
-    while True:
-        horario = input(mensaje).strip()
-        if validar_horario(horario):
-            if minimo is None or horario_a_minutos(horario) > minimo:
-                return horario
-            print("El fin debe ser posterior al inicio.")
-        else:
-            print("Horario inválido. Use el formato HH:MM (ej: 09:30).")
-
-
 def pedir_horario_recurrente():
     """Pide y valida el inicio y el fin de un horario recurrente."""
     inicio_horario = input("Ingrese el inicio de su horario recurrente(HH:MM): ").strip()
