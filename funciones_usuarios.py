@@ -103,8 +103,10 @@ def pedir_horario_recurrente():
 
 
 
-def cargar_usuarios(usuarios):
+def cargar_usuarios():
     """Carga un usuario y lo guarda en lista_usuarios.json."""
+    with open("lista_usuarios.json", "r", encoding="utf-8") as archivo:
+            usuarios = json.load(archivo)
     programas = cargar_programas()
     if not programas:
         print("No hay programas disponibles para registrar el usuario.")
@@ -136,7 +138,4 @@ def cargar_usuarios(usuarios):
 
 # Para probarlo
 if __name__ == "__main__":
-    with open("lista_usuarios.json", "r", encoding="utf-8") as archivo:
-        usuarios = json.load(archivo)
-    cargar_usuarios(usuarios)
-    print(usuarios)
+    cargar_usuarios()

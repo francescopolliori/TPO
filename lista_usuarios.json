@@ -42,5 +42,16 @@
             "12:00",
             "14:00"
         ]
+    },
+    {
+        "id": 5,
+        "nombre": "Santiago Jimenez",
+        "edad": 24,
+        "suscripcion": "Ibai Llanos",
+        "streamer_favorito": "Ibai",
+        "horario_recurrentes": [
+            "14:00",
+            "15:00"
+        ]
     }
 ]
