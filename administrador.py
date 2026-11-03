@@ -356,3 +356,24 @@ def imprimir_usuarios_a_revisar(matriz_usuarios, ruta_log):
     print("=== USUARIOS A REVISAR ===")
     for u in pendientes:
         print(f"  ID {u[ID]} - {u[NOMBRE_USUARIO]}: {' | '.join(avisos[u[ID]])}")
+
+
+#if __name__ == "__main__":
+    # Datos mínimos para probar sin complicaciones
+    #programas_prueba = [
+        #[1, "Migue Granados", "Entretenimiento", "Mañana"]
+    #]
+    #canales_prueba = {"olga", "luzu tv"}
+
+    # Usuario de prueba con formato nuevo: [ID, NOMBRE, EDAD, CANAL, STREAMER, [HORARIOS]]
+    #usuarios_prueba = [
+        #[1, "Juan Perez", 25, "olga", "Migue Granados", ["Mañana"]]
+    #]
+
+    #print("--- 1. Probando guardado y carga de JSON ---")
+    #guardar_usuarios(RUTA_USUARIOS, usuarios_prueba)
+    #usuarios_cargados = cargar_usuarios(RUTA_USUARIOS)
+    #print(f"Se cargaron {len(usuarios_cargados)} usuario(s) desde el JSON.")
+
+    #print("\n--- 2. Probando tabla y estadísticas ---")
+    #imprimir_estadisticas(usuarios_cargados, programas_prueba, canales_prueba)
