@@ -1,39 +1,6 @@
 [
     {
         "id": 1,
-        "nombre": "Pepe",
-        "edad": 25,
-        "suscripcion": 0,
-        "streamer_favorito": 2,
-        "horarios_recurrentes": [
-            "17:00",
-            "19:00"
-        ]
-    },
-    {
-        "id": 2,
-        "nombre": "Ana",
-        "edad": 30,
-        "suscripcion": 1,
-        "streamer_favorito": 1,
-        "horarios_recurrentes": [
-            "18:00",
-            "20:00"
-        ]
-    },
-    {
-        "id": 3,
-        "nombre": "Luis",
-        "edad": 22,
-        "suscripcion": 0,
-        "streamer_favorito": 3,
-        "horarios_recurrentes": [
-            "19:00",
-            "21:00"
-        ]
-    },
-    {
-        "id": 4,
         "nombre": "Rodrigo Carle",
         "edad": 19,
         "suscripcion": "412",
@@ -41,6 +8,28 @@
         "horario_recurrentes": [
             "12:00",
             "14:00"
+        ]
+    },
+    {
+        "id": 2,
+        "nombre": "Santiago Jimenez",
+        "edad": 24,
+        "suscripcion": "Ibai Llanos",
+        "streamer_favorito": "Ibai",
+        "horario_recurrentes": [
+            "14:00",
+            "15:00"
+        ]
+    },
+    {
+        "id": 3,
+        "nombre": "Fran Po",
+        "edad": 44,
+        "suscripcion": "Industria Nacional",
+        "streamer_favorito": "Pedro Rosemblat",
+        "horario_recurrentes": [
+            "23:59",
+            "00:00"
         ]
     }
 ]
