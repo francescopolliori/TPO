@@ -1,8 +1,8 @@
 import re
+import json
 
-from listas_usuarios import usuarios
-from menu_seleccion import seleccionar_programa
-from listas_programas import programas, canales_validos
+from menu_seleccion import cargar_programas, seleccionar_programa
+
 
 
 def validar_edad(edad):
@@ -102,38 +102,41 @@ def pedir_horario_recurrente():
             "Horario invalido, ingrese el fin de su horario recurrente nuevamente (HH:MM): ").strip()
 
 
-def cargar_usuarios(matriz_usuario):
-    """Función para cargar usuarios en la matriz de usuarios."""
-    usuario = []
+
+def cargar_usuarios(usuarios):
+    """Carga un usuario y lo guarda en lista_usuarios.json."""
+    programas = cargar_programas()
+    if not programas:
+        print("No hay programas disponibles para registrar el usuario.")
+        return usuarios
+
     nombre = pedir_nombre()
     edad = pedir_edad()
 
-    prog = seleccionar_programa(edad)
-
-    indice_streamer = programas.index(prog)
-
-    nombre_canal = prog[2].lower()
-    indice_canal = -1
-    
-    for i in range(len(canales_validos)):
-        if canales_validos[i] == nombre_canal:
-            indice_canal = i
-            break
+    prog = seleccionar_programa(programas, edad)
+    if prog is None:
+        return usuarios
 
     inicio_horario, fin_horario = pedir_horario_recurrente()
 
-    usuario.append(len(matriz_usuario) + 1) #aca hay que hacer una funcion que agregue esto al archivo
-    usuario.append(nombre)
-    usuario.append(edad)
-    usuario.append(indice_canal)
-    usuario.append(indice_streamer)
-    usuario.append([inicio_horario, fin_horario])
+    usuario = {
+        "id": max((u.get("id", 0) for u in usuarios), default=0) + 1,
+        "nombre": nombre, 
+        "edad": edad, 
+        "suscripcion": prog["nombre_programa"],
+        "streamer_favorito": prog["conductor"],
+        "horario_recurrentes": [inicio_horario, fin_horario]
+    }
 
-    matriz_usuario.append(usuario)
-    return matriz_usuario
+    usuarios.append(usuario)
+    with open("lista_usuarios.json", "w", encoding="utf-8") as archivo:
+        json.dump(usuarios, archivo, indent=4, ensure_ascii=False)
+    return usuarios
 
 
 # Para probarlo
 if __name__ == "__main__":
+    with open("lista_usuarios.json", "r", encoding="utf-8") as archivo:
+        usuarios = json.load(archivo)
     cargar_usuarios(usuarios)
     print(usuarios)

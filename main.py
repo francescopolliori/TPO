@@ -2,8 +2,7 @@ import json
 from funciones_canales import menu_demostraciones, canales_validos
 from funciones_usuarios import cargar_usuarios
 from administrador import imprimir_estadisticas
-from listas_usuarios import usuarios
-from listas_programas import programas
+
 
 def generar_archivo(nombre_archivo):
     try:
@@ -65,4 +64,4 @@ def menu_principal():
 if __name__ == "__main__":
     generar_archivo("lista_usuarios.json")
     generar_archivo("lista_programas.json")
-    #menu_principal() 
+    menu_principal() 

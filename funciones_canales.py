@@ -1,10 +1,49 @@
 import json
 from functools import reduce
-from listas_programas import programas,  canales_validos
+import re
+
+ruta_json="lista_programas.json"
+
+
 
 NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
 
 dias_validos = ( "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+
+#Json lectura de archivos
+RE_HORARIO = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
+RE_TEXTO = re.compile(r"[A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ ]+")
+
+
+def _canales_de(programas):
+    """Set con los canales (normalizados) que existen en los programas."""
+    return {" ".join(p[CANAL].split()).lower() for p in programas}
+
+
+def _leer_json(ruta):
+    """Devuelve la matriz de programas guardada en el JSON.
+    Si el archivo no existe devuelve una matriz vacía.
+    Lanza ValueError si el JSON está dañado o tiene un formato inválido."""
+    try:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            programas = json.load(archivo)["programas"]
+    except FileNotFoundError:
+        return []
+    except (json.JSONDecodeError, KeyError, TypeError):
+        raise ValueError(f"el archivo '{ruta}' está dañado o tiene un formato inválido.")
+    for fila in programas:
+        if not isinstance(fila, list) or len(fila) != 6:
+            raise ValueError(f"el archivo '{ruta}' tiene un programa con formato inválido.")
+    return programas
+
+
+def _guardar_json(ruta, programas):
+    """Guarda la matriz y el set de canales (como lista) en el JSON.
+    Lanza OSError si no se puede escribir el archivo."""
+    datos = {"programas": programas, "canales": sorted(_canales_de(programas))}
+    with open(ruta, "w", encoding="utf-8") as archivo:
+        json.dump(datos, archivo, ensure_ascii=False, indent=4)
+
 
 #VALIDACIONES
 def validar_horario(horario):
@@ -39,52 +78,72 @@ def validar_texto(texto):
     return True
 
 
+# AGREGAR PROGRAMA
+def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
+    """Valida y agrega un programa al JSON. Cualquier canal es válido: si ya
+    existe no se vuelve a agregar a la lista de canales (set).
+    Lanza ValueError si un dato es inválido, OSError si falla el archivo.
+    Devuelve True si el canal era nuevo, False si ya existía."""
+    for etiqueta, valor in (("nombre", nombre), ("streamer", streamer),
+                            ("canal", canal), ("categoría", categoria)):
+        if not RE_TEXTO.fullmatch(valor.strip()):
+            raise ValueError(f"{etiqueta} '{valor}' inválido.")
+
+    dia_oficial = next((d for d in dias_validos if d.lower() == dia.strip().lower()), None)
+    if dia_oficial is None:
+        raise ValueError(f"día '{dia}' inválido.")
+    if not RE_HORARIO.fullmatch(horario.strip()):
+        raise ValueError(f"horario '{horario}' inválido. Debe ser HH:MM.")
+
+    programas = _leer_json(ruta)
+    canal_limpio = " ".join(canal.split())
+    canal_nuevo = canal_limpio.lower() not in _canales_de(programas)
+
+    programas.append([nombre.strip(), streamer.strip(), canal_limpio,
+                      dia_oficial, horario.strip(), categoria.strip()])
+    _guardar_json(ruta, programas)
+    return canal_nuevo
 
 
-# ALTA / BAJA / MODIFICACIÓN 
-def agregar_programa(programas, nombre, streamer, canal, dia, horario, categoria):
-    """Agrega un nuevo programa a la matriz, validando todos los campos."""
-    if not validar_texto(nombre):
-        print(f"Error: nombre '{nombre}' inválido.")
-        return programas
-    if not validar_texto(streamer):
-        print(f"Error: streamer '{streamer}' inválido.")
-        return programas
-    if not validar_texto(canal):
-        print(f"Error: canal '{canal}' inválido.")
-        return programas
-    if not validar_dia(dia):
-        print(f"Error: día '{dia}' inválido.")
-        return programas
-    if not validar_horario(horario):
-        print(f"Error: horario '{horario}' inválido. Debe ser formato HH:MM.")
-        return programas
-    if not validar_texto(categoria):
-        print(f"Error: categoría '{categoria}' inválida.")
-        return programas
-    programas.append([nombre, streamer, canal, dia, horario, categoria])
-    return programas
-
-
-def actualizar_horario(programas, nombre_programa, nuevo_horario):
-    """Modifica el horario de un programa existente, validando el formato."""
-    if not validar_horario(nuevo_horario):
-        print(f"Error: horario '{nuevo_horario}' inválido.")
-        return False
+# ELIMINAR PROGRAMA
+def eliminar_programa(ruta, nombre_programa):
+    """Elimina un programa del JSON por nombre (ignora mayúsculas).
+    Devuelve True si lo eliminó, False si no existe."""
+    programas = _leer_json(ruta)
     for p in programas:
-        if p[NOMBRE].lower() == nombre_programa.lower():
-            p[HORARIO] = nuevo_horario
-            return True
-    return False
-
-
-def eliminar_programa(programas, nombre_programa):
-    """Elimina un programa de la matriz por nombre."""
-    for p in programas:
-        if p[NOMBRE].lower() == nombre_programa.lower():
+        if p[NOMBRE].lower() == nombre_programa.strip().lower():
             programas.remove(p)
+            _guardar_json(ruta, programas)
             return True
     return False
+
+
+# ACTUALIZAR HORARIO
+def actualizar_horario(ruta, nombre_programa, nuevo_horario):
+    """Cambia el horario de un programa en el JSON.
+    Devuelve False si el horario es inválido o el programa no existe."""
+    if not RE_HORARIO.fullmatch(nuevo_horario.strip()):
+        return False
+    programas = _leer_json(ruta)
+    for p in programas:
+        if p[NOMBRE].lower() == nombre_programa.strip().lower():
+            p[HORARIO] = nuevo_horario.strip()
+            _guardar_json(ruta, programas)
+            return True
+    return False
+
+
+# LISTADO COMPLETO
+def listado_completo(ruta):
+    """Lee el JSON e imprime todos los programas en formato tabla."""
+    programas = _leer_json(ruta)
+    print(f"{'Programa':<22}{'Streamer':<22}{'Canal':<15}{'Dia':<14}{'Horario':<10}Categoria")
+    print("-" * 100)
+    if not programas:
+        print("No hay programas cargados.")
+    for p in programas:
+        print(f"{p[NOMBRE]:<22}{p[STREAMER]:<22}{p[CANAL]:<15}"
+              f"{p[DIA]:<14}{p[HORARIO]:<10}{p[CATEGORIA]}")
 
 
 #IMPRESIÓN
