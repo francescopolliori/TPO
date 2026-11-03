@@ -15,12 +15,12 @@ RE_HORARIO = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
 RE_TEXTO = re.compile(r"[A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ ]+")
 
 
-def _canales_de(programas):
+def canales_de(programas):
     """Set con los canales (normalizados) que existen en los programas."""
     return {" ".join(p[CANAL].split()).lower() for p in programas}
 
 
-def _leer_json(ruta):
+def leer_json(ruta):
     """Devuelve la matriz de programas guardada en el JSON.
     Si el archivo no existe devuelve una matriz vacía.
     Lanza ValueError si el JSON está dañado o tiene un formato inválido."""
@@ -37,10 +37,10 @@ def _leer_json(ruta):
     return programas
 
 
-def _guardar_json(ruta, programas):
+def guardar_json(ruta, programas):
     """Guarda la matriz y el set de canales (como lista) en el JSON.
     Lanza OSError si no se puede escribir el archivo."""
-    datos = {"programas": programas, "canales": sorted(_canales_de(programas))}
+    datos = {"programas": programas, "canales": sorted(canales_de(programas))}
     with open(ruta, "w", encoding="utf-8") as archivo:
         json.dump(datos, archivo, ensure_ascii=False, indent=4)
 
@@ -95,13 +95,13 @@ def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
     if not RE_HORARIO.fullmatch(horario.strip()):
         raise ValueError(f"horario '{horario}' inválido. Debe ser HH:MM.")
 
-    programas = _leer_json(ruta)
+    programas = leer_json(ruta)
     canal_limpio = " ".join(canal.split())
-    canal_nuevo = canal_limpio.lower() not in _canales_de(programas)
+    canal_nuevo = canal_limpio.lower() not in canales_de(programas)
 
     programas.append([nombre.strip(), streamer.strip(), canal_limpio,
                       dia_oficial, horario.strip(), categoria.strip()])
-    _guardar_json(ruta, programas)
+    guardar_json(ruta, programas)
     return canal_nuevo
 
 
@@ -109,11 +109,11 @@ def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
 def eliminar_programa(ruta, nombre_programa):
     """Elimina un programa del JSON por nombre (ignora mayúsculas).
     Devuelve True si lo eliminó, False si no existe."""
-    programas = _leer_json(ruta)
+    programas = leer_json(ruta)
     for p in programas:
         if p[NOMBRE].lower() == nombre_programa.strip().lower():
             programas.remove(p)
-            _guardar_json(ruta, programas)
+            guardar_json(ruta, programas)
             return True
     return False
 
@@ -124,11 +124,11 @@ def actualizar_horario(ruta, nombre_programa, nuevo_horario):
     Devuelve False si el horario es inválido o el programa no existe."""
     if not RE_HORARIO.fullmatch(nuevo_horario.strip()):
         return False
-    programas = _leer_json(ruta)
+    programas = leer_json(ruta)
     for p in programas:
         if p[NOMBRE].lower() == nombre_programa.strip().lower():
             p[HORARIO] = nuevo_horario.strip()
-            _guardar_json(ruta, programas)
+            guardar_json(ruta, programas)
             return True
     return False
 
@@ -136,7 +136,7 @@ def actualizar_horario(ruta, nombre_programa, nuevo_horario):
 # LISTADO COMPLETO
 def listado_completo(ruta):
     """Lee el JSON e imprime todos los programas en formato tabla."""
-    programas = _leer_json(ruta)
+    programas = leer_json(ruta)
     print(f"{'Programa':<22}{'Streamer':<22}{'Canal':<15}{'Dia':<14}{'Horario':<10}Categoria")
     print("-" * 100)
     if not programas:

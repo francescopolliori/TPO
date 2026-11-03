@@ -27,30 +27,35 @@ def seleccionar_programa(programas, edad, solo_conductor=False):
         return None
     
     while True:
-        print("\033[H\033[2J" + "\n" * 40)
-
-        # 2. Ajustamos el ancho según el modo de visualización
-        ancho = 40 if solo_conductor else 125
-        print("=" * ancho)
+        print("\033[H\033[2J") # Limpiamos la pantalla
         
-        # 3. Encabezados dinámicos
-        if solo_conductor:
-            print(f"    {'Nº':>3} | {'Conductor':<20}")
-        else:
-            print(f"    {'Nº':>3} | {'Programa':<20} | {'Conductor':<20} | {'Plataforma':<10} | {'Día':<10} | {'Hora':<5} | {'Género':<15}")
-            
+        ancho = 125
+        print("=" * ancho)
+        print(f"    {'Nº':>3} | {'Programa':<20} | {'Conductor':<20} | {'Plataforma':<10}")
         print("-" * ancho)
         
-        # 4. Filas dinámicas iterando sobre los diccionarios
-        for i, p in enumerate(programas_filtrados):
+        # --- LÓGICA DE VENTANA DESLIZANTE ---
+        max_visibles = 10  # Cuántos canales mostrar a la vez
+        
+        # Calculamos desde dónde y hasta dónde mostrar
+        inicio = max(0, seleccion - (max_visibles // 2))
+        fin = min(total, inicio + max_visibles)
+        
+        # Ajuste para evitar que la ventana se achique al final de la lista
+        if fin - inicio < max_visibles:
+            inicio = max(0, fin - max_visibles)
+            
+        # ------------------------------------
+        
+        # Iteramos SOLO sobre el recorte de la lista (la ventana)
+        for i in range(inicio, fin):
+            p = programas_filtrados[i]
             prefijo = " ➔ " if i == seleccion else "   "
             
-            if solo_conductor:
-                print(f"{prefijo} {i:>3} | {p['conductor']:<20}")
-            else:
-                print(f"{prefijo} {i:>3} | {p['nombre_programa']:<20} | {p['conductor']:<20} | {p['plataforma']:<10} | {p['dia']:<10} | {p['hora_inicio']:<5} | {p['genero']:<15}")
+            print(f"{prefijo} {i:>3} | {p['nombre_programa']:<20} | {p['conductor']:<20} | {p['plataforma']:<10}")
                 
         print("=" * ancho)
+        print(f" Mostrando {inicio + 1} a {fin} de {total} programas disponibles.")
         
         accion = input("\n Acción (w/s) o ENTER: ").lower()
         
