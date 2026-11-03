@@ -1,219 +1,174 @@
-from funciones_canales import STREAMER, CANAL, CATEGORIA, HORARIO
+import json
 
-# Indices de la matriz de usuarios (ver listas_usuarios.py)
-ID, NOMBRE_USUARIO, EDAD, CANAL_SUSCRIPTO, STREAMER_FAVORITO, HORARIOS = range(6)
+# ==========================================
+# 1. CARGA DE DATOS JSON
+# ==========================================
+def cargar_json(ruta):
+    try:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            return json.load(archivo)
+    except FileNotFoundError:
+        print(f"Error: No se encontró el archivo '{ruta}'.")
+        return []
 
+# ==========================================
+# 2. FUNCIONES DE APOYO (Sin librerías)
+# ==========================================
+def obtener_mejor(diccionario_conteo):
+    """Busca y devuelve la clave con el valor más alto en un diccionario."""
+    mejor_clave = "Ninguno"
+    mejor_valor = 0
+    for clave, valor in diccionario_conteo.items():
+        if valor > mejor_valor:
+            mejor_valor = valor
+            mejor_clave = clave
+    return mejor_clave
 
-#suma 1 a un valor dentro de dos listas paralelas 
-def sumar_uno(nombres, cantidades, valor):
-    """Busca `va en la lista `nombres`; si esta, le suma 1 a su cantidad
-    en la misma posicion. Si no esta, lo agrega con cantidad 1."""
-    encontrado = False
-    for i in range(len(nombres)):
-        if nombres[i] == valor:
-            cantidades[i] = cantidades[i] + 1
-            encontrado = True
-    if not encontrado:
-        nombres.append(valor)
-        cantidades.append(1)
+# ==========================================
+# 3. FUNCIONES DE ESTADÍSTICAS
+# ==========================================
+def analizar_streamers(usuarios):
+    conteo = {}
+    for u in usuarios:
+        streamer = u["streamer_favorito"]
+        if streamer in conteo:
+            conteo[streamer] += 1
+        else:
+            conteo[streamer] = 1
+    return obtener_mejor(conteo), conteo
 
-def buscar_cantidad(nombres, cantidades, valor):
-    """Devuelve la cantidad asociada a `valor`, o 0 si no esta en la lista."""
-    for i in range(len(nombres)):
-        if nombres[i] == valor:
-            return cantidades[i]
-    return 0
-
-
-def mejor_de(nombres, cantidades):
-    """Devuelve el nombre con mayor cantidad de las dos listas paralelas,
-    o None si estan vacias."""
-    mejor_nombre = None
-    mejor_cantidad = 0
-    for i in range(len(nombres)):
-        if cantidades[i] > mejor_cantidad:
-            mejor_cantidad = cantidades[i]
-            mejor_nombre = nombres[i]
-    return mejor_nombre
-
-
-# STREAMERS
-def contar_streamers_favoritos(matriz_usuarios, programas):
-    """Cuenta cuantos usuarios tienen a cada streamer como favorito.
-    Devuelve dos listas paralelas: nombres de streamer y cantidades."""
-    nombres = []
-    cantidades = []
-    for u in matriz_usuarios:
-        indice = u[STREAMER_FAVORITO]
-        if 0 <= indice < len(programas):
-            streamer = programas[indice][STREAMER]
-            sumar_uno(nombres, cantidades, streamer)
-    return nombres, cantidades
-
-
-def streamer_mas_visto(matriz_usuarios, programas):
-    """Devuelve el streamer favorito de la mayor cantidad de usuarios."""
-    nombres, cantidades = contar_streamers_favoritos(matriz_usuarios, programas)
-    return mejor_de(nombres, cantidades)
-
-
-# CATEGORIAS
-def contar_categorias_vistas(matriz_usuarios, programas):
-    """Cuenta cuantos usuarios ven cada categoria (segun su streamer favorito).
-    Devuelve dos listas paralelas: nombres de categoria y cantidades."""
-    nombres = []
-    cantidades = []
-    for u in matriz_usuarios:
-        indice = u[STREAMER_FAVORITO]
-        if 0 <= indice < len(programas):
-            categoria = programas[indice][CATEGORIA]
-            sumar_uno(nombres, cantidades, categoria)
-    return nombres, cantidades        
-def categoria_mas_vista(matriz_usuarios, programas):
-    """Devuelve la categoria mas vista entre todos los usuarios."""
-    nombres, cantidades = contar_categorias_vistas(matriz_usuarios, programas)
-    return mejor_de(nombres, cantidades)
-
-
-# CANALES
-def contar_canales_suscriptos(matriz_usuarios, canales_validos):
-    """Cuenta cuantos usuarios estan suscriptos a cada canal.
-    Devuelve dos listas paralelas: nombres de canal y cantidades."""
-    nombres = []
-    cantidades = []
-    for u in matriz_usuarios:
-        indice = u[CANAL_SUSCRIPTO]
-        if 0 <= indice < len(canales_validos):
-            canal = canales_validos[indice].upper()
-            sumar_uno(nombres, cantidades, canal)
-    return nombres, cantidades
-
-
-def canal_mas_visto(matriz_usuarios, canales_validos):
-    """Devuelve el canal con mas usuarios suscriptos."""
-    nombres, cantidades = contar_canales_suscriptos(matriz_usuarios, canales_validos)
-    return mejor_de(nombres, cantidades)
-
-
-# HORARIOS
-def contar_horarios(matriz_usuarios):
-    """Cuenta cuantas veces aparece cada horario entre todos los usuarios.
-    Devuelve dos listas paralelas: horarios y cantidades."""
-    nombres = []
-    cantidades = []
-    for u in matriz_usuarios:
-        for horario in u[HORARIOS]:
-            sumar_uno(nombres, cantidades, horario)
-    return nombres, cantidades
-
-
-def horario_pico(matriz_usuarios):
-    """Devuelve el horario en que mas usuarios suelen ver contenido."""
-    nombres, cantidades = contar_horarios(matriz_usuarios)
-    return mejor_de(nombres, cantidades)
-
-
-def streamer_con_pico_de_vistas(matriz_usuarios, programas):
-    """Devuelve el streamer favorito mejor posicionado entre los programas
-    que se emiten justo en el horario pico (el streamer 'de moda' en el
-    horario de mayor audiencia)."""
-    pico = horario_pico(matriz_usuarios)
-    if pico is None:
-        return None
-
-    nombres_streamers, cantidades_streamers = contar_streamers_favoritos(matriz_usuarios, programas)
-
-    mejor_streamer = None
-    mejor_cantidad = -1
-    for p in programas:
-        if p[HORARIO] == pico:
-            streamer = p[STREAMER]
-            cantidad = buscar_cantidad(nombres_streamers, cantidades_streamers, streamer)
-            if cantidad > mejor_cantidad:
-                mejor_cantidad = cantidad
-                mejor_streamer = streamer
-    return mejor_streamer
-
-def mostrar_tabla_usuarios(matriz_usuarios, programas, canales_validos):
-    """Imprime una tabla alineada con todos los datos de los usuarios,
-    traduciendo los índices de canal y streamer a sus nombres reales."""
-    
-    # Anchos de columna fijos para mantener la alineación de la tabla
-    w_id, w_nom, w_edad, w_canal, w_streamer, w_hor = 4, 12, 6, 18, 18, 20
-    
-    # Límite horizontal
-    linea = f"+{'-'*(w_id+2)}+{'-'*(w_nom+2)}+{'-'*(w_edad+2)}+{'-'*(w_canal+2)}+{'-'*(w_streamer+2)}+{'-'*(w_hor+2)}+"
-
-    print(linea)
-    print(f"| {'ID':<{w_id}} | {'Nombre':<{w_nom}} | {'Edad':<{w_edad}} | {'Canal Sub':<{w_canal}} | {'Streamer Fav.':<{w_streamer}} | {'Horarios':<{w_hor}} |")
-    print(linea)
-
-    for u in matriz_usuarios:
-        user_id = u[ID]
-        nombre = u[NOMBRE_USUARIO]
-        edad = u[EDAD]
+def analizar_categorias(usuarios, programas):
+    conteo = {}
+    for u in usuarios:
+        streamer_fav = u["streamer_favorito"]
         
-        # Buscar el nombre del canal según su índice
-        idx_canal = u[CANAL_SUSCRIPTO]
-        if 0 <= idx_canal < len(canales_validos):
-            canal = canales_validos[idx_canal].upper()
+        # Buscamos qué género tiene el programa de este streamer
+        categoria = "Sin género"
+        for p in programas:
+            if p["conductor"] == streamer_fav:
+                categoria = p["genero"]
+                break  # Lo encontramos, dejamos de buscar
+        
+        if categoria in conteo:
+            conteo[categoria] += 1
         else:
-            canal = "Sin Suscripción"
+            conteo[categoria] = 1
+            
+    return obtener_mejor(conteo), conteo
 
-        # Buscar el nombre del streamer dentro de la lista 'programas'
-        idx_streamer = u[STREAMER_FAVORITO]
-        if 0 <= idx_streamer < len(programas):
-            streamer = programas[idx_streamer][STREAMER]
+def analizar_canales(usuarios):
+    conteo = {}
+    for u in usuarios:
+        canal = u["suscripcion"]
+        if canal in conteo:
+            conteo[canal] += 1
         else:
-            streamer = "Ninguno"
+            conteo[canal] = 1
+    return obtener_mejor(conteo), conteo
 
-        # Unir los horarios de la lista en un solo string
-        horarios = ", ".join(u[HORARIOS])
+def analizar_horarios(usuarios):
+    conteo = {}
+    for u in usuarios:
+        # Nota: Respetamos la clave "horario_recurrentes" exacta de tu JSON
+        for horario in u["horario_recurrentes"]:
+            if horario in conteo:
+                conteo[horario] += 1
+            else:
+                conteo[horario] = 1
+    return obtener_mejor(conteo), conteo
 
-        print(f"| {user_id:<{w_id}} | {nombre:<{w_nom}} | {edad:<{w_edad}} | {canal:<{w_canal}} | {streamer:<{w_streamer}} | {horarios:<{w_hor}} |")
+def streamer_con_pico_de_vistas(usuarios, programas):
+    mejor_horario, _ = analizar_horarios(usuarios)
+    if mejor_horario == "Ninguno":
+        return "Ninguno"
 
-    print(linea)
+    conteo = {}
+    for u in usuarios:
+        streamer_fav = u["streamer_favorito"]
+        
+        # Verificamos si el programa de este streamer favorito se emite en el horario pico
+        for p in programas:
+            if p["conductor"] == streamer_fav and p["hora_inicio"] == mejor_horario:
+                if streamer_fav in conteo:
+                    conteo[streamer_fav] += 1
+                else:
+                    conteo[streamer_fav] = 1
+                break
 
-#REPORTE COMPLETO (para la opcion de administrador)
-def imprimir_estadisticas(matriz_usuarios, programas, canales_validos):
-    """Imprime en pantalla el resumen que pide la tarjeta de administrador:
-    vistas de la gente, categorias mas vistas, streamer mas visto,
-    streamer con pico de vistas y horario pico."""
-    print("=== ESTADISTICAS DE VISTAS ===")
-    print("Total de usuarios registrados: " + str(len(matriz_usuarios)))
-    print("Canal mas visto (suscripto): " + str(canal_mas_visto(matriz_usuarios, canales_validos)))
-    print("Categoria mas vista: " + str(categoria_mas_vista(matriz_usuarios, programas)))
-    print("Streamer mas visto: " + str(streamer_mas_visto(matriz_usuarios, programas)))
-    print("Streamer con pico de vistas: " + str(streamer_con_pico_de_vistas(matriz_usuarios, programas)))
-    print("Horario pico: " + str(horario_pico(matriz_usuarios)))
+    return obtener_mejor(conteo)
 
-    print("")
-    print("--- Detalle: conteo por categoria ---")
-    nombres_cat, cantidades_cat = contar_categorias_vistas(matriz_usuarios, programas)
-    for i in range(len(nombres_cat)):
-        print("  " + nombres_cat[i] + ": " + str(cantidades_cat[i]))
+# ==========================================
+# 4. INTERFAZ Y VISUALIZACIÓN
+# ==========================================
+def mostrar_tabla_usuarios(usuarios):
+    """Imprime una tabla limpia con bordes y anchos fijos."""
+    ancho = 110
+    print("\n" + "=" * ancho)
+    print(f"| {'ID':<4} | {'Nombre':<18} | {'Edad':<4} | {'Canal Sub':<20} | {'Streamer Fav.':<20} | {'Horarios':<25} |")
+    print("-" * ancho)
 
-    print("")
-    print("--- Detalle: conteo por streamer ---")
-    nombres_str, cantidades_str = contar_streamers_favoritos(matriz_usuarios, programas)
-    for i in range(len(nombres_str)):
-        print("  " + nombres_str[i] + ": " + str(cantidades_str[i]))
+    for u in usuarios:
+        user_id = u["id"]
+        nombre = u["nombre"]
+        edad = u["edad"]
+        canal = u["suscripcion"]
+        streamer = u["streamer_favorito"]
+        horarios = ", ".join(u["horario_recurrentes"])
 
-    print("")
-    print("--- Detalle: conteo por canal suscripto ---")
-    nombres_can, cantidades_can = contar_canales_suscriptos(matriz_usuarios, canales_validos)
-    for i in range(len(nombres_can)):
-        print("  " + nombres_can[i] + ": " + str(cantidades_can[i]))
+        print(f"| {user_id:<4} | {nombre:<18} | {edad:<4} | {canal:<20} | {streamer:<20} | {horarios:<25} |")
 
-    print("")
-    print("--- Detalle: conteo por horario ---")
-    nombres_hor, cantidades_hor = contar_horarios(matriz_usuarios)
-    for i in range(len(nombres_hor)):
-        print("  " + nombres_hor[i] + ": " + str(cantidades_hor[i]))
+    print("=" * ancho + "\n")
 
-    mostrar_tabla_usuarios(usuarios, programas, canales_validos)
+def imprimir_estadisticas():
+    """Imprime el reporte completo cargando los datos internamente desde los JSON."""
+    # 1. Cargamos los datos aquí adentro
+    usuarios = cargar_json("lista_usuarios.json")
+    programas = cargar_json("lista_programas.json")
+
+    # Si hubo un error al cargar y devolvieron listas vacías, cortamos la ejecución
+    if not usuarios or not programas:
+        print("Faltan datos para procesar el reporte.")
+        return
+
+    # 2. Hacemos los análisis
+    mejor_canal, conteo_canales = analizar_canales(usuarios)
+    mejor_cat, conteo_cat = analizar_categorias(usuarios, programas)
+    mejor_streamer, conteo_streamers = analizar_streamers(usuarios)
+    mejor_horario, conteo_horarios = analizar_horarios(usuarios)
+    streamer_pico = streamer_con_pico_de_vistas(usuarios, programas)
+
+    # 3. Imprimimos los resultados
+    print("\n" + "===" * 15)
+    print(f"{'=== REPORTE DE ESTADÍSTICAS GLOBALES ===':^45}")
+    print("===" * 15 + "\n")
+    
+    print(f"Total de usuarios registrados : {len(usuarios)}")
+    print(f"Canal más visto (suscritos)   : {mejor_canal}")
+    print(f"Categoría más vista           : {mejor_cat}")
+    print(f"Streamer más visto            : {mejor_streamer}")
+    print(f"Horario pico de visualización : {mejor_horario}")
+    print(f"Streamer 'en racha' (en pico) : {streamer_pico}")
+
+    # Función interna para imprimir los desgloses
+    def mostrar_desglose(titulo, diccionario, sufijo):
+        print("\n" + "-" * 40)
+        print(f"DETALLE: {titulo}")
+        
+        # sorted() ordena de mayor a menor según el valor
+        items_ordenados = sorted(diccionario.items(), key=lambda x: x[1], reverse=True)
+        for clave, cantidad in items_ordenados:
+            print(f"    • {clave:<20}: {cantidad} {sufijo}")
+
+    mostrar_desglose("POR CATEGORÍA", conteo_cat, "vistas")
+    mostrar_desglose("POR STREAMER", conteo_streamers, "vistas")
+    mostrar_desglose("POR CANAL SUSCRITO", conteo_canales, "suscripciones")
+    mostrar_desglose("POR HORARIO", conteo_horarios, "vistas")
+
+    # Imprimimos la tabla final
+    mostrar_tabla_usuarios(usuarios)
 
 
-#DEMOSTRACIÓN
+
 if __name__ == "__main__":
-    imprimir_estadisticas(usuarios, programas, canales_validos)
+    # Ahora la llamada es limpia, sin pasarle ningún parámetro
+    imprimir_estadisticas()

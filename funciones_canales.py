@@ -57,7 +57,7 @@ def _clave_dia(dia):
     return _sin_acentos(_normalizar(dia))
 
 
-def _canales_de(programas):
+def canales_de(programas):
     """Set con los canales (normalizados) que existen en los programas."""
     return {_normalizar(p[CANAL]) for p in programas}
 
@@ -88,7 +88,7 @@ def _escribir_json_atomico(ruta, datos):
         raise
 
 
-def _leer_json(ruta):
+def leer_json(ruta):
     """Devuelve la matriz de programas guardada en el JSON.
     Si el archivo no existe o está vacío devuelve una matriz vacía.
     Lanza ValueError si el JSON está dañado o tiene un formato inválido.
@@ -118,20 +118,12 @@ def _leer_json(ruta):
 
 
 def _guardar_json(ruta, programas):
-    """Guarda la matriz de programas en el JSON (escritura atómica)."""
-    _escribir_json_atomico(ruta, {"programas": programas})
+    """Guarda la matriz y el set de canales (como lista) en el JSON.
+    Lanza OSError si no se puede escribir el archivo."""
+    datos = {"programas": programas, "canales": sorted(_canales_de(programas))}
+    with open(ruta, "w", encoding="utf-8") as archivo:
+        json.dump(datos, archivo, ensure_ascii=False, indent=4)
 
-
-def guardar_resultado(nombre_archivo, resultados):
-    """Guarda un resultado en un JSON (junto al script). Devuelve False si no
-    pudo escribir, para que un error de disco no tire abajo el menú."""
-    ruta = os.path.join(CARPETA, nombre_archivo)
-    try:
-        _escribir_json_atomico(ruta, resultados)
-        return True
-    except OSError:
-        print(f"(Aviso: no se pudo guardar '{nombre_archivo}')")
-        return False
 
 #VALIDACIONES
 
@@ -175,28 +167,23 @@ def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
     if not validar_horario(horario):
         raise ValueError(f"horario '{horario}' inválido. Debe ser HH:MM.")
 
-    dia_oficial = next(d for d in dias_validos if _clave_dia(d) == _clave_dia(dia))
-
     programas = _leer_json(ruta)
-    nombre_buscado = _normalizar(nombre)
-    if any(_normalizar(p[NOMBRE]) == nombre_buscado for p in programas):
-        raise ValueError(f"ya existe un programa llamado '{' '.join(nombre.split())}'.")
-
     canal_limpio = " ".join(canal.split())
-    canal_nuevo = _normalizar(canal_limpio) not in _canales_de(programas)
+    canal_nuevo = canal_limpio.lower() not in _canales_de(programas)
 
-    programas.append([" ".join(nombre.split()), " ".join(streamer.split()), canal_limpio,dia_oficial, horario.strip(), " ".join(categoria.split())])
+    programas.append([nombre.strip(), streamer.strip(), canal_limpio,
+                      dia_oficial, horario.strip(), categoria.strip()])
     _guardar_json(ruta, programas)
     return canal_nuevo
 
 
 def eliminar_programa(ruta, nombre_programa):
-    """Elimina un programa del JSON por nombre. Devuelve True si lo encontró."""
+    """Elimina un programa del JSON por nombre (ignora mayúsculas).
+    Devuelve True si lo eliminó, False si no existe."""
     programas = _leer_json(ruta)
-    buscado = _normalizar(nombre_programa)
-    for i, p in enumerate(programas):
-        if _normalizar(p[NOMBRE]) == buscado:
-            del programas[i]
+    for p in programas:
+        if p[NOMBRE].lower() == nombre_programa.strip().lower():
+            programas.remove(p)
             _guardar_json(ruta, programas)
             return True
     return False
@@ -204,27 +191,24 @@ def eliminar_programa(ruta, nombre_programa):
 
 def actualizar_horario(ruta, nombre_programa, nuevo_horario):
     """Cambia el horario de un programa en el JSON.
-    Lanza ValueError con mensajes distintos si el horario es inválido o si el
-    programa no existe."""
-    if not validar_horario(nuevo_horario):
-        raise ValueError(f"horario '{nuevo_horario}' inválido. Debe ser HH:MM.")
+    Devuelve False si el horario es inválido o el programa no existe."""
+    if not RE_HORARIO.fullmatch(nuevo_horario.strip()):
+        return False
     programas = _leer_json(ruta)
-    buscado = _normalizar(nombre_programa)
     for p in programas:
         if _normalizar(p[NOMBRE]) == buscado:
             p[HORARIO] = nuevo_horario.strip()
             _guardar_json(ruta, programas)
-            return
-    raise ValueError(f"no existe un programa llamado '{nombre_programa.strip()}'.")
+            return True
+    return False
 
 
-# IMPRESIÓN / LISTADO
-def imprimir_programas(programas):
-    """Imprime la matriz con formato de tabla."""
-    a = ANCHOS
-    print(f"{'Programa':<{a[0]}}{'Streamer':<{a[1]}}{'Canal':<{a[2]}}"
-          f"{'Día':<{a[3]}}{'Horario':<{a[4]}}Categoría")
-    print("-" * (sum(a) + len("Categoría")))
+# LISTADO COMPLETO
+def listado_completo(ruta):
+    """Lee el JSON e imprime todos los programas en formato tabla."""
+    programas = _leer_json(ruta)
+    print(f"{'Programa':<22}{'Streamer':<22}{'Canal':<15}{'Dia':<14}{'Horario':<10}Categoria")
+    print("-" * 100)
     if not programas:
         print("No hay programas cargados.")
     for p in programas:

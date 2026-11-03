@@ -1,5 +1,5 @@
 import json
-from funciones_canales import menu_demostraciones, canales_validos
+from funciones_canales import menu_demostraciones
 from funciones_usuarios import cargar_usuarios
 from administrador import imprimir_estadisticas
 
@@ -34,7 +34,7 @@ def menu_principal():
         if opcion == '1':
             print("\n--- Ingreso de Usuarios ---")
             while True:
-                cargar_usuarios(usuarios)
+                cargar_usuarios()
                 print("\n¡Usuario cargado exitosamente!")
                 
                 continuar = input("¿Desea ingresar otro usuario? (s/n): ").strip().lower()
@@ -49,7 +49,7 @@ def menu_principal():
         # OPCIÓN 3 (una sola vez)
         elif opcion == '3':
             print("\n\033[H\033[2J") # Limpia la consola 
-            imprimir_estadisticas(usuarios, programas, canales_validos)
+            imprimir_estadisticas()
             input("\nPresione ENTER para volver al menú principal...")
             
         # OPCIÓN 4: Salir
