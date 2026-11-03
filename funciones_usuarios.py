@@ -1,5 +1,6 @@
 import re
 
+from TPO.administrador import ID
 from listas_usuarios import usuarios
 from menu_seleccion import seleccionar_programa
 from listas_programas import programas, canales_validos
@@ -102,9 +103,9 @@ def pedir_horario_recurrente():
             "Horario invalido, ingrese el fin de su horario recurrente nuevamente (HH:MM): ").strip()
 
 
+
 def cargar_usuarios(matriz_usuario):
     """Función para cargar usuarios en la matriz de usuarios."""
-    usuario = []
     nombre = pedir_nombre()
     edad = pedir_edad()
 
@@ -122,12 +123,14 @@ def cargar_usuarios(matriz_usuario):
 
     inicio_horario, fin_horario = pedir_horario_recurrente()
 
-    usuario.append(len(matriz_usuario) + 1) #aca hay que hacer una funcion que agregue esto al archivo
-    usuario.append(nombre)
-    usuario.append(edad)
-    usuario.append(indice_canal)
-    usuario.append(indice_streamer)
-    usuario.append([inicio_horario, fin_horario])
+    usuario = {
+        "id": ID, 
+        "nombre": nombre, 
+        "edad": edad, 
+        "suscripcion": prog[0], 
+        "streamer_favorito": prog[1], 
+        "horario_recurrentes": [inicio_horario, fin_horario]
+        }
 
     matriz_usuario.append(usuario)
     return matriz_usuario
