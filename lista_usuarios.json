@@ -31,5 +31,16 @@
             "23:59",
             "00:00"
         ]
+    },
+    {
+        "id": 4,
+        "nombre": "Facundo Arias",
+        "edad": 45,
+        "suscripcion": "Seria Increible",
+        "streamer_favorito": "Nati Jota",
+        "horario_recurrentes": [
+            "19:00",
+            "21:00"
+        ]
     }
 ]

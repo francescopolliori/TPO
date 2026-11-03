@@ -2,6 +2,7 @@ import json
 from funciones_canales import menu_demostraciones
 from funciones_usuarios import cargar_usuarios
 from administrador import imprimir_estadisticas
+from generar_csv import menu_exportacion
 
 
 def generar_archivo(nombre_archivo):
@@ -25,10 +26,11 @@ def menu_principal():
         print("  1. Ingresar usuarios")
         print("  2. Cargar/modificar programas")
         print("  3. Analizar estadísticas")
-        print("  4. Finalizar")
+        print("  4. Exportar datos a CSV")
+        print("  5. Finalizar")
         print("=" * 55)
         
-        opcion = input("\nSeleccione una opción (1-4): ")
+        opcion = input("\nSeleccione una opción (1-5): ")
         
         # OPCIÓN 1
         if opcion == '1':
@@ -52,13 +54,17 @@ def menu_principal():
             imprimir_estadisticas()
             input("\nPresione ENTER para volver al menú principal...")
             
-        # OPCIÓN 4: Salir
+        # OPCIÓN 4
         elif opcion == '4':
+            menu_exportacion()
+
+        # OPCIÓN 5: Salir
+        elif opcion == '5':
             print("\nOperacion finalizada.")
             break
             
         else:
-            print("\nOpción inválida. Por favor, intente nuevamente ingresando un número del 1 al 4.")
+            print("\nOpción inválida. Por favor, intente nuevamente ingresando un número del 1 al 5.")
 
 
 if __name__ == "__main__":
