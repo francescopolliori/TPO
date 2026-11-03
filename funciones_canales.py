@@ -1,6 +1,6 @@
 import json
 
-RUTA_JSON = "programas.json"
+RUTA_JSON = "lista_programas.json"
 DIAS_VALIDOS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
 
 #FUNCIONES BASE Y ARCHIVOS
