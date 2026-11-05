@@ -1,326 +1,220 @@
 import json
-import os
-import sys
-import unicodedata
-from functools import reduce
 
-# Las rutas son relativas a la carpeta del script, no al directorio de ejecución.
-CARPETA = os.path.dirname(os.path.abspath(__file__))
-ruta_json = os.path.join(CARPETA, "lista_programas.json")
+RUTA_JSON = "lista_programas.json"
+DIAS_VALIDOS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
 
-NOMBRE, STREAMER, CANAL, DIA, HORARIO, CATEGORIA = range(6)
+#FUNCIONES BASE Y ARCHIVOS
+def limpiar_pantalla():
+    """Limpia la consola usando códigos ANSI sin depender del sistema operativo (librería os)."""
+    print("\033[H\033[2J", end="")
 
-dias_validos = ("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
-
-# Signos de puntuación permitidos además de letras, números y espacios.
-PUNTUACION_PERMITIDA = set("_-.:,;'&!?()+#@")
-
-# Ancho de cada columna de la tabla.
-ANCHOS = (22, 22, 15, 14, 10)
-
-
-def _soporta(texto):
-    """Indica si la salida estándar puede mostrar el texto sin fallar."""
-    codificacion = sys.stdout.encoding or "ascii"
-    try:
-        texto.encode(codificacion)
-        return True
-    except (UnicodeEncodeError, LookupError):
-        return False
-
-
-# Símbolos con alternativa para consolas con codificación antigua.
-FLECHA = "➔" if _soporta("➔") else ">"
-PUNTOS = "…" if _soporta("…") else "..."
-
-
-def _normalizar(texto):
-    """Quita espacios sobrantes (extremos e internos) y pasa a minúsculas."""
-    return " ".join(texto.split()).lower()
-
-
-def _sin_acentos(texto):
-    """Quita los acentos de un texto (á -> a). Solo se conserva la tilde de
-    la ñ/Ñ; cualquier otra tilde (ã, õ...) se elimina."""
-    resultado = []
-    for c in unicodedata.normalize("NFD", texto):
-        if unicodedata.category(c) == "Mn":
-            if c == "\u0303" and resultado and resultado[-1] in "nN":
-                resultado.append(c)
-            continue
-        resultado.append(c)
-    return unicodedata.normalize("NFC", "".join(resultado))
-
-
-def _clave_dia(dia):
-    """Clave comparable para un día: sin espacios, sin tilde, en minúsculas."""
-    return _sin_acentos(_normalizar(dia))
-
-
-def canales_de(programas):
-    """Set con los canales (normalizados) que existen en los programas."""
-    return {_normalizar(p[CANAL]) for p in programas}
-
-
-def _recortar(texto, ancho):
-    """Recorta un texto largo para que no desalinee la tabla."""
-    if len(texto) < ancho:
-        return texto
-    return texto[:ancho - 1 - len(PUNTOS)] + PUNTOS
-
-
-def _escribir_json_atomico(ruta, datos):
-    """Escribe un JSON de forma atómica: primero a un archivo temporal y
-    después lo reemplaza, así un corte a mitad de la escritura no destruye
-    los datos existentes."""
-    temporal = ruta + ".tmp"
-    try:
-        with open(temporal, "w", encoding="utf-8") as archivo:
-            json.dump(datos, archivo, ensure_ascii=False, indent=4)
-            archivo.flush()
-            os.fsync(archivo.fileno())
-        os.replace(temporal, ruta)
-    except BaseException:
-        try:
-            os.remove(temporal)
-        except OSError:
-            pass
-        raise
-
-
-def leer_json(ruta):
-    """Devuelve la matriz de programas guardada en el JSON.
-    Si el archivo no existe o está vacío devuelve una matriz vacía.
-    Lanza ValueError si el JSON está dañado o tiene un formato inválido.
-    Si el archivo trae una clave 'canales' (versiones anteriores) se ignora."""
+def cargar_json(ruta):
+    """Carga los datos del JSON. Devuelve lista vacía si no existe."""
     try:
         with open(ruta, "r", encoding="utf-8") as archivo:
-            texto = archivo.read()
+            return json.load(archivo)
     except FileNotFoundError:
         return []
 
-    if not texto.strip():
-        return []
-
-    try:
-        contenido = json.loads(texto)
-    except json.JSONDecodeError:
-        raise ValueError(f"el archivo '{ruta}' está dañado.") from None
-
-    programas = contenido.get("programas") if isinstance(contenido, dict) else contenido
-    if not isinstance(programas, list):
-        raise ValueError(f"el archivo '{ruta}' tiene un formato inválido.")
-    for fila in programas:
-        if (not isinstance(fila, list) or len(fila) != 6
-                or not all(isinstance(campo, str) for campo in fila)):
-            raise ValueError(f"el archivo '{ruta}' tiene un programa con formato inválido.")
-    return programas
-
-
-def _guardar_json(ruta, programas):
-    """Guarda la matriz y el set de canales (como lista) en el JSON.
-    Lanza OSError si no se puede escribir el archivo."""
-    datos = {"programas": programas, "canales": sorted(_canales_de(programas))}
+def guardar_json(ruta, datos):
+    """Guarda la lista de diccionarios en el archivo JSON."""
     with open(ruta, "w", encoding="utf-8") as archivo:
         json.dump(datos, archivo, ensure_ascii=False, indent=4)
 
+def normalizar(texto):
+    """Quita espacios, pasa a minúsculas y elimina tildes sin usar librerías."""
+    texto = texto.strip().lower()
+    reemplazos = (("á", "a"), ("é", "e"), ("í", "i"), ("ó", "o"), ("ú", "u"))
+    for a, b in reemplazos:
+        texto = texto.replace(a, b)
+    return texto
 
 #VALIDACIONES
 
 def validar_horario(horario):
-    """Valida que el horario tenga formato HH:MM en 24hs."""
     horario = horario.strip()
     if len(horario) != 5 or horario[2] != ":":
         return False
     hh, mm = horario[:2], horario[3:]
-    # Solo dígitos ASCII: isdigit() acepta caracteres como '²' que rompen int().
-    if not all(c in "0123456789" for c in hh + mm):
+    if not (hh.isdigit() and mm.isdigit()):
         return False
     return 0 <= int(hh) <= 23 and 0 <= int(mm) <= 59
 
-
 def validar_dia(dia):
-    """Valida que el día sea válido, sin importar mayúsculas, tildes o espacios."""
-    return _clave_dia(dia) in {_clave_dia(d) for d in dias_validos}
+    return normalizar(dia) in DIAS_VALIDOS
 
+def validar_genero(categoria):
+    """Valida que el género sea correcto, carácter por carácter."""
 
-def validar_texto(texto):
-    """Valida que un texto no esté vacío y contenga solo letras, números,
-    espacios y algunos signos de puntuación comunes (_ - . : , ; ' & ! ? ( ) + # @)."""
-    texto = texto.strip()
-    if not texto:
+    generos_validos = [
+        "Entretenimiento",
+        "Actualidad",
+        "Humor",
+        "Deporte",
+        "Espectaculo",
+        "Infantil"
+    ]
+
+    categoria = categoria.strip()
+
+    if not categoria:
         return False
-    # Letras Unicode (con tildes y ñ) y solo dígitos ASCII: isalnum() acepta '²' o '½'.
-    return all(c.isalpha() or c in "0123456789" or c == " " or c in PUNTUACION_PERMITIDA for c in texto)
 
+    for letra in categoria:
+        if not (letra.isalpha() or letra == " "):
+            return False
 
+    return normalizar(categoria) in [
+        normalizar(genero) for genero in generos_validos
+    ]    
+
+#LÓGICA DE PROGRAMAS (CRUD)
 def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
-    """Valida y agrega un programa al JSON.
-    Devuelve True si el canal es nuevo.
-    Lanza ValueError si algún dato es inválido o el programa ya existe."""
-    for etiqueta, valor in (("nombre", nombre), ("streamer", streamer),
-                            ("canal", canal), ("categoría", categoria)):
-        if not validar_texto(valor):
-            raise ValueError(f"{etiqueta} '{valor}' inválido.")
+
+    # Validamos que los campos no estén vacíos
+    if not nombre.strip():
+        raise ValueError("El nombre del programa no puede estar vacío.")
+
+    if not streamer.strip():
+        raise ValueError("El conductor no puede estar vacío.")
+
+    if not canal.strip():
+        raise ValueError("La plataforma no puede estar vacía.")
+
+    # Validamos el día
     if not validar_dia(dia):
-        raise ValueError(f"día '{dia}' inválido.")
+        raise ValueError("Día inválido.")
+
+    # Validamos el horario
     if not validar_horario(horario):
-        raise ValueError(f"horario '{horario}' inválido. Debe ser HH:MM.")
+        raise ValueError("Horario inválido. Use formato HH:MM.")
 
-    programas = _leer_json(ruta)
-    canal_limpio = " ".join(canal.split())
-    canal_nuevo = canal_limpio.lower() not in _canales_de(programas)
+    # Validamos el género
+    if not validar_genero(categoria):
+        raise ValueError("Género inválido o no permitido.")
 
-    programas.append([nombre.strip(), streamer.strip(), canal_limpio,
-                      dia_oficial, horario.strip(), categoria.strip()])
-    _guardar_json(ruta, programas)
+    # Cargamos los programas existentes
+    programas = cargar_json(ruta)
+
+    # Comprobamos que no exista otro programa con el mismo nombre
+    for p in programas:
+        if normalizar(p["nombre_programa"]) == normalizar(nombre):
+            raise ValueError("Ya existe un programa con ese nombre.")
+
+    # Comprobamos si el canal es nuevo
+    canales_existentes = {
+        normalizar(p["plataforma"]) for p in programas
+    }
+
+    canal_nuevo = normalizar(canal) not in canales_existentes
+
+    # Creamos el nuevo programa
+    nuevo_programa = {
+        "nombre_programa": nombre.strip(),
+        "conductor": streamer.strip(),
+        "plataforma": canal.strip(),
+        "dia": dia.strip().capitalize(),
+        "hora_inicio": horario.strip(),
+        "genero": categoria.strip()
+    }
+
+    # Agregamos el programa y guardamos el JSON
+    programas.append(nuevo_programa)
+    guardar_json(ruta, programas)
+
     return canal_nuevo
 
-
-def eliminar_programa(ruta, nombre_programa):
-    """Elimina un programa del JSON por nombre (ignora mayúsculas).
-    Devuelve True si lo eliminó, False si no existe."""
-    programas = _leer_json(ruta)
+def eliminar_programa(ruta, nombre_buscar):
+    programas = cargar_json(ruta)
+    nombre_buscado = normalizar(nombre_buscar)
+    
     for p in programas:
-        if p[NOMBRE].lower() == nombre_programa.strip().lower():
+        if normalizar(p["nombre_programa"]) == nombre_buscado:
             programas.remove(p)
-            _guardar_json(ruta, programas)
+            guardar_json(ruta, programas)
             return True
     return False
 
-
-def actualizar_horario(ruta, nombre_programa, nuevo_horario):
-    """Cambia el horario de un programa en el JSON.
-    Devuelve False si el horario es inválido o el programa no existe."""
-    if not RE_HORARIO.fullmatch(nuevo_horario.strip()):
-        return False
-    programas = _leer_json(ruta)
+def actualizar_horario(ruta, nombre_buscar, nuevo_horario):
+    if not validar_horario(nuevo_horario):
+        raise ValueError("Horario inválido.")
+        
+    programas = cargar_json(ruta)
+    nombre_buscado = normalizar(nombre_buscar)
+    
     for p in programas:
-        if _normalizar(p[NOMBRE]) == buscado:
-            p[HORARIO] = nuevo_horario.strip()
-            _guardar_json(ruta, programas)
+        if normalizar(p["nombre_programa"]) == nombre_buscado:
+            p["hora_inicio"] = nuevo_horario.strip()
+            guardar_json(ruta, programas)
             return True
     return False
 
-
-# LISTADO COMPLETO
-def listado_completo(ruta):
-    """Lee el JSON e imprime todos los programas en formato tabla."""
-    programas = _leer_json(ruta)
-    print(f"{'Programa':<22}{'Streamer':<22}{'Canal':<15}{'Dia':<14}{'Horario':<10}Categoria")
-    print("-" * 100)
+#REPORTES Y BÚSQUEDAS
+def imprimir_programas(programas):
+    """Imprime una tabla elegante."""
     if not programas:
-        print("No hay programas cargados.")
+        print("\n 📭 No hay programas para mostrar.\n")
+        return
+
+    ancho = 110
+    print("\n" + "=" * ancho)
+    print(f"| {'Programa':<25} | {'Conductor':<20} | {'Plataforma':<15} | {'Día':<10} | {'Hora':<6} | {'Género':<15} |")
+    print("-" * ancho)
+
     for p in programas:
-        print(f"{_recortar(p[NOMBRE], a[0]):<{a[0]}}"
-              f"{_recortar(p[STREAMER], a[1]):<{a[1]}}"
-              f"{_recortar(p[CANAL], a[2]):<{a[2]}}"
-              f"{_recortar(p[DIA], a[3]):<{a[3]}}"
-              f"{_recortar(p[HORARIO], a[4]):<{a[4]}}"
-              f"{p[CATEGORIA]}")
-
-
-def listado_completo(ruta):
-    """Lee el JSON e imprime todos los programas en formato tabla."""
-    imprimir_programas(_leer_json(ruta))
-
-
-def buscar_por_canal(programas, canal):
-    """Programas cuyo canal coincide exactamente (sin importar mayúsculas/espacios)."""
-    canal = _normalizar(canal)
-    if not canal:
-        return []
-    return list(filter(lambda p: _normalizar(p[CANAL]) == canal, programas))
-
-
-def buscar_por_streamer(programas, streamer):
-    """Programas cuyo streamer contiene el texto buscado. Un texto vacío no
-    devuelve nada (en vez de devolver todos los programas)."""
-    streamer = _normalizar(streamer)
-    if not streamer:
-        return []
-    return list(filter(lambda p: streamer in _normalizar(p[STREAMER]), programas))
-
-
-def obtener_nombres(programas):
-    return list(map(lambda p: p[NOMBRE], programas))
-
-
-def canales_en_mayusculas(programas):
-    return list(map(lambda p: p[CANAL].upper(), programas))
-
-
-def total_programas(programas):
-    return reduce(lambda acc, p: acc + 1, programas, 0)
-
-
-def concatenar_nombres(programas):
-    return reduce(lambda acc, p: p[NOMBRE] if not acc else acc + " | " + p[NOMBRE],
-                  programas, "")
-
+        nom = p["nombre_programa"][:24]
+        cond = p["conductor"][:19]
+        plat = p["plataforma"][:14]
+        dia = p["dia"][:9]
+        hora = p["hora_inicio"]
+        gen = p["genero"][:14]
+        print(f"| {nom:<25} | {cond:<20} | {plat:<15} | {dia:<10} | {hora:<6} | {gen:<15} |")
+    
+    print("=" * ancho + "\n")
 
 def detectar_choques_horario(programas):
-    """Pares de programas que coinciden en día y horario exactos."""
     choques = []
     for i in range(len(programas)):
         for j in range(i + 1, len(programas)):
             a, b = programas[i], programas[j]
-            if _clave_dia(a[DIA]) == _clave_dia(b[DIA]) and a[HORARIO].strip() == b[HORARIO].strip():
-                choques.append((a[NOMBRE], b[NOMBRE], a[DIA], a[HORARIO]))
+            if normalizar(a["dia"]) == normalizar(b["dia"]) and a["hora_inicio"] == b["hora_inicio"]:
+                choques.append((a["nombre_programa"], b["nombre_programa"], a["dia"], a["hora_inicio"]))
     return choques
 
 
-def choques_de_programa(programas, nombre_programa):
-    """Choques de horario en los que participa un programa concreto."""
-    buscado = _normalizar(nombre_programa)
-    return [c for c in detectar_choques_horario(programas)
-            if buscado in (_normalizar(c[0]), _normalizar(c[1]))]
-
-
-def avisar_choques(ruta, nombre_programa):
-    """Imprime una advertencia si el programa choca con otro."""
-    try:
-        choques = choques_de_programa(_leer_json(ruta), nombre_programa)
-    except (ValueError, OSError):
-        return
-    for nombre_a, nombre_b, dia, horario in choques:
-        print(f"\n(Aviso: '{nombre_a}' y '{nombre_b}' coinciden el {dia} a las {horario})")
-
-# MENÚ DE DEMOSTRACIÓN DE FUNCIONES
-def limpiar_pantalla():
-    os.system("cls" if os.name == "nt" else "clear")
-
-
+# MENÚ INTERACTIVO
 def menu_demostraciones():
     opciones = [
-        "Agregar programa", "Eliminar programa", "Actualizar horario",
-        "Listado completo", "Buscar por canal", "Buscar por streamer",
-        "Nombres de todos los programas (map)", "Canales en mayúsculas (map)",
-        "Total de programas (reduce)", "Concatenación de nombres (reduce)",
-        "Choques de horario", "Salir"
+        "Agregar programa", 
+        "Eliminar programa", 
+        "Actualizar horario",
+        "Listado completo", 
+        "Buscar por canal", 
+        "Buscar por streamer",
+        "Nombres de todos los programas", 
+        "Canales en mayúsculas",
+        "Total de programas", 
+        "Concatenación de nombres",
+        "Choques de horario", 
+        "Salir"
     ]
 
     seleccion = 0
 
     while True:
-        try:
-            programas = _leer_json(ruta_json)
-        except (ValueError, OSError) as error:
-            print("Error:", error)
-            input("\nPresione ENTER para salir...")
-            break
-
+        programas = cargar_json(RUTA_JSON)
         limpiar_pantalla()
-        print("=" * 55)
-        print("                 MENÚ DE FUNCIONES")
-        print("=" * 55)
+        
+        print("===" * 15)
+        print(f"{'MENÚ DE GESTIÓN DE PROGRAMAS':^55}")
+        print("===" * 15 + "\n")
 
-        for i in range(len(opciones)):
-            marca = FLECHA if i == seleccion else " "
-            print(f" {marca} {i + 1:>2}. {opciones[i]}")
+        for i, op in enumerate(opciones):
+            marca = "➔ " if i == seleccion else "   "
+            print(f"{marca} {i + 1:>2}. {op}")
 
-        print("=" * 55)
-        accion = input("\nw/s para moverse, número para elegir, ENTER para ejecutar: ").strip().lower()
+        print("\n" + "=" * 55)
+        accion = input(" Utilice (w/s) para moverse o el NÚMERO + ENTER: ").strip().lower()
 
         if accion == "w":
             seleccion = (seleccion - 1) % len(opciones)
@@ -328,66 +222,51 @@ def menu_demostraciones():
         if accion == "s":
             seleccion = (seleccion + 1) % len(opciones)
             continue
-        if accion != "":
-            # Número de opción directo (solo dígitos ASCII).
-            if all(c in "0123456789" for c in accion) and 1 <= int(accion) <= len(opciones):
-                seleccion = int(accion) - 1
-            else:
-                continue
+        
+        if accion.isdigit() and 1 <= int(accion) <= len(opciones):
+            seleccion = int(accion) - 1
+        elif accion != "":
+            continue
 
         limpiar_pantalla()
-
+        
+        # --- EJECUCIÓN DE OPCIONES ---
         if seleccion == 0:
             print("=== AGREGAR PROGRAMA ===")
-            nombre = input("Ingrese el nombre del programa: ")
-            streamer = input("Ingrese el nombre del streamer: ")
-            canal = input("Ingrese el canal: ")
-            dia = input("Ingrese el día: ")
-            horario = input("Ingrese el horario (HH:MM): ")
-            categoria = input("Ingrese la categoría: ")
-
+            nombre = input("Nombre del programa: ")
+            streamer = input("Nombre del streamer: ")
+            canal = input("Canal / Plataforma: ")
+            dia = input("Día de transmisión: ")
+            horario = input("Horario (HH:MM): ")
+            categoria = input("Género: ")
             try:
-                canal_nuevo = agregar_programa(ruta_json, nombre, streamer, canal,
-                                               dia, horario, categoria)
-                print("\nPrograma agregado correctamente.")
-                if canal_nuevo:
-                    print("Se creó un canal nuevo.")
-                imprimir_programas(_leer_json(ruta_json))
-                avisar_choques(ruta_json, nombre)
-            except ValueError as error:
-                print("\nNo se pudo agregar el programa:", error)
-            except OSError:
-                print("\nNo se pudo escribir el archivo.")
+                es_nuevo = agregar_programa(RUTA_JSON, nombre, streamer, canal, dia, horario, categoria)
+                print("\nPrograma agregado con éxito.")
+                if es_nuevo: print("Se registró una plataforma nueva.")
+            except ValueError as e:
+                print(f"\nError: {e}")
 
         elif seleccion == 1:
             print("=== ELIMINAR PROGRAMA ===")
             imprimir_programas(programas)
-            nombre_programa = input("\nIngrese el nombre del programa que desea eliminar: ")
-            try:
-                if eliminar_programa(ruta_json, nombre_programa):
-                    print("\nPrograma eliminado correctamente.")
-                    imprimir_programas(_leer_json(ruta_json))
-                else:
-                    print("\nNo se encontró el programa.")
-            except ValueError as error:
-                print("\nNo se pudo eliminar el programa:", error)
-            except OSError:
-                print("\nNo se pudo escribir el archivo.")
+            nombre = input("Nombre del programa a eliminar: ")
+            if eliminar_programa(RUTA_JSON, nombre):
+                print("Programa eliminado.")
+            else:
+                print("No se encontró el programa.")
 
         elif seleccion == 2:
             print("=== ACTUALIZAR HORARIO ===")
             imprimir_programas(programas)
-            nombre_programa = input("\nIngrese el nombre del programa: ")
-            nuevo_horario = input("Ingrese el nuevo horario (HH:MM): ")
+            nombre = input("Nombre del programa: ")
+            nuevo = input("Nuevo horario (HH:MM): ")
             try:
-                actualizar_horario(ruta_json, nombre_programa, nuevo_horario)
-                print("\nHorario actualizado correctamente.")
-                imprimir_programas(_leer_json(ruta_json))
-                avisar_choques(ruta_json, nombre_programa)
-            except ValueError as error:
-                print("\nNo se pudo actualizar el horario:", error)
-            except OSError:
-                print("\nNo se pudo escribir el archivo.")
+                if actualizar_horario(RUTA_JSON, nombre, nuevo):
+                    print("Horario actualizado.")
+                else:
+                    print("No se encontró el programa.")
+            except ValueError as e:
+                print(f"\nError: {e}")
 
         elif seleccion == 3:
             print("=== LISTADO COMPLETO ===")
@@ -395,68 +274,49 @@ def menu_demostraciones():
 
         elif seleccion == 4:
             print("=== BÚSQUEDA POR CANAL ===")
-            print("Canales disponibles:")
-            for canal in sorted(_canales_de(programas)):
-                print("- " + canal.upper())
-            canal_buscado = input("\nIngrese el nombre del canal: ")
-            resultado = buscar_por_canal(programas, canal_buscado)
-            guardar_resultado("busqueda_canal.json", resultado)
-            if not resultado:
-                print("\nNo se encontraron programas del canal:", canal_buscado)
-            else:
-                print("\nProgramas encontrados:")
-                imprimir_programas(resultado)
+            canal_buscado = normalizar(input("Ingrese el nombre del canal: "))
+            resultado = [p for p in programas if normalizar(p["plataforma"]) == canal_buscado]
+            imprimir_programas(resultado)
 
         elif seleccion == 5:
             print("=== BÚSQUEDA POR STREAMER ===")
-            streamer_buscado = input("Ingrese el nombre del streamer: ")
-            resultado = buscar_por_streamer(programas, streamer_buscado)
-            guardar_resultado("busqueda_streamer.json", resultado)
-            if not resultado:
-                print("\nNo se encontraron streamers con el nombre:", streamer_buscado)
-            else:
-                print("\nProgramas encontrados:")
-                imprimir_programas(resultado)
+            streamer_buscado = normalizar(input("Ingrese el nombre del streamer: "))
+            resultado = [p for p in programas if streamer_buscado in normalizar(p["conductor"])]
+            imprimir_programas(resultado)
 
         elif seleccion == 6:
-            print("=== NOMBRES DE TODOS LOS PROGRAMAS (MAP) ===")
-            resultado = obtener_nombres(programas)
-            guardar_resultado("nombres_programas.json", resultado)
-            print(resultado)
+            print("=== NOMBRES DE TODOS LOS PROGRAMAS ===")
+            nombres = [p["nombre_programa"] for p in programas]
+            for n in nombres: print(f" - {n}")
 
         elif seleccion == 7:
-            print("=== CANALES EN MAYÚSCULAS (MAP) ===")
-            resultado = canales_en_mayusculas(programas)
-            guardar_resultado("canales_mayusculas.json", resultado)
-            print(resultado)
+            print("=== CANALES EN MAYÚSCULAS ===")
+            canales = {p["plataforma"].upper() for p in programas}
+            for c in canales: print(f" - {c}")
 
         elif seleccion == 8:
-            print("=== TOTAL DE PROGRAMAS (REDUCE) ===")
-            print(total_programas(programas))
+            print("=== TOTAL DE PROGRAMAS ===")
+            print(f"Hay un total de {len(programas)} programas registrados.")
 
         elif seleccion == 9:
-            print("=== CONCATENACIÓN DE NOMBRES (REDUCE) ===")
-            print(concatenar_nombres(programas))
+            print("=== CONCATENACIÓN DE NOMBRES ===")
+            nombres = [p["nombre_programa"] for p in programas]
+            print(" | ".join(nombres))
 
         elif seleccion == 10:
             print("=== CHOQUES DE HORARIO ===")
             choques = detectar_choques_horario(programas)
             if not choques:
-                print("No se encontraron choques de horario.")
+                print("No hay choques de horario.")
             else:
-                for nombre_a, nombre_b, dia, horario in choques:
-                    print(f"- {nombre_a} y {nombre_b}: {dia} a las {horario}")
+                for a, b, dia, hora in choques:
+                    print(f"Choque: '{a}' y '{b}' coinciden el {dia} a las {hora}.")
 
         elif seleccion == 11:
-            print("Saliendo del menú...")
+            print("Saliendo del menú... ¡Hasta luego!")
             break
 
         input("\nPresione ENTER para volver al menú...")
 
-
 if __name__ == "__main__":
-    try:
-        menu_demostraciones()
-    except (KeyboardInterrupt, EOFError):
-        print("\nSaliendo del menú...")
-        
+    menu_demostraciones()
