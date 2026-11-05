@@ -1,8 +1,7 @@
 import json
 
-# ==========================================
-# 1. CARGA DE DATOS JSON
-# ==========================================
+# CARGA DE DATOS JSON
+
 def cargar_json(ruta):
     try:
         with open(ruta, "r", encoding="utf-8") as archivo:
@@ -11,9 +10,8 @@ def cargar_json(ruta):
         print(f"Error: No se encontró el archivo '{ruta}'.")
         return []
 
-# ==========================================
-# 2. FUNCIONES DE APOYO (Sin librerías)
-# ==========================================
+# FUNCIONES DE AUXILIARES 
+
 def obtener_mejor(diccionario_conteo):
     """Busca y devuelve la clave con el valor más alto en un diccionario."""
     mejor_clave = "Ninguno"
@@ -24,9 +22,9 @@ def obtener_mejor(diccionario_conteo):
             mejor_clave = clave
     return mejor_clave
 
-# ==========================================
-# 3. FUNCIONES DE ESTADÍSTICAS
-# ==========================================
+
+# FUNCIONES DE ESTADÍSTICAS
+
 def analizar_streamers(usuarios):
     conteo = {}
     for u in usuarios:
@@ -69,7 +67,6 @@ def analizar_canales(usuarios):
 def analizar_horarios(usuarios):
     conteo = {}
     for u in usuarios:
-        # Nota: Respetamos la clave "horario_recurrentes" exacta de tu JSON
         for horario in u["horario_recurrentes"]:
             if horario in conteo:
                 conteo[horario] += 1
@@ -85,8 +82,6 @@ def streamer_con_pico_de_vistas(usuarios, programas):
     conteo = {}
     for u in usuarios:
         streamer_fav = u["streamer_favorito"]
-        
-        # Verificamos si el programa de este streamer favorito se emite en el horario pico
         for p in programas:
             if p["conductor"] == streamer_fav and p["hora_inicio"] == mejor_horario:
                 if streamer_fav in conteo:
@@ -97,9 +92,9 @@ def streamer_con_pico_de_vistas(usuarios, programas):
 
     return obtener_mejor(conteo)
 
-# ==========================================
-# 4. INTERFAZ Y VISUALIZACIÓN
-# ==========================================
+
+# INTERFAZ Y VISUALIZACIÓN
+
 def mostrar_tabla_usuarios(usuarios):
     """Imprime una tabla limpia con bordes y anchos fijos."""
     ancho = 110
@@ -121,7 +116,7 @@ def mostrar_tabla_usuarios(usuarios):
 
 def imprimir_estadisticas():
     """Imprime el reporte completo cargando los datos internamente desde los JSON."""
-    # 1. Cargamos los datos aquí adentro
+    # Cargamos los datos aquí adentro
     usuarios = cargar_json("lista_usuarios.json")
     programas = cargar_json("lista_programas.json")
 
@@ -130,14 +125,14 @@ def imprimir_estadisticas():
         print("Faltan datos para procesar el reporte.")
         return
 
-    # 2. Hacemos los análisis
+    # Hacemos los análisis
     mejor_canal, conteo_canales = analizar_canales(usuarios)
     mejor_cat, conteo_cat = analizar_categorias(usuarios, programas)
     mejor_streamer, conteo_streamers = analizar_streamers(usuarios)
     mejor_horario, conteo_horarios = analizar_horarios(usuarios)
     streamer_pico = streamer_con_pico_de_vistas(usuarios, programas)
 
-    # 3. Imprimimos los resultados
+    
     print("\n" + "===" * 15)
     print(f"{'=== REPORTE DE ESTADÍSTICAS GLOBALES ===':^45}")
     print("===" * 15 + "\n")
@@ -149,12 +144,11 @@ def imprimir_estadisticas():
     print(f"Horario pico de visualización : {mejor_horario}")
     print(f"Streamer 'en racha' (en pico) : {streamer_pico}")
 
-    # Función interna para imprimir los desgloses
+    # Función interna para imprimir los desgloses de manera ordenada
     def mostrar_desglose(titulo, diccionario, sufijo):
         print("\n" + "-" * 40)
         print(f"DETALLE: {titulo}")
-        
-        # sorted() ordena de mayor a menor según el valor
+
         items_ordenados = sorted(diccionario.items(), key=lambda x: x[1], reverse=True)
         for clave, cantidad in items_ordenados:
             print(f"    • {clave:<20}: {cantidad} {sufijo}")
@@ -164,11 +158,11 @@ def imprimir_estadisticas():
     mostrar_desglose("POR CANAL SUSCRITO", conteo_canales, "suscripciones")
     mostrar_desglose("POR HORARIO", conteo_horarios, "vistas")
 
-    # Imprimimos la tabla final
+    
     mostrar_tabla_usuarios(usuarios)
 
 
 
 if __name__ == "__main__":
-    # Ahora la llamada es limpia, sin pasarle ningún parámetro
+
     imprimir_estadisticas()
