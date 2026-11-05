@@ -1,7 +1,7 @@
 import json
 
 RUTA_JSON = "lista_programas.json"
-DIAS_VALIDOS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
+DIAS_VALIDOS = ("lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo")
 
 #FUNCIONES BASE Y ARCHIVOS
 def limpiar_pantalla():
@@ -32,6 +32,7 @@ def normalizar(texto):
 #VALIDACIONES
 
 def validar_horario(horario):
+    """Valida que el horario esté en formato HH:MM y sea un horario válido."""
     horario = horario.strip()
     if len(horario) != 5 or horario[2] != ":":
         return False
@@ -41,6 +42,7 @@ def validar_horario(horario):
     return 0 <= int(hh) <= 23 and 0 <= int(mm) <= 59
 
 def validar_dia(dia):
+    """Valida que el día sea uno de los días válidos de la semana."""
     return normalizar(dia) in DIAS_VALIDOS
 
 def validar_genero(categoria):
@@ -70,6 +72,7 @@ def validar_genero(categoria):
 
 #LÓGICA DE PROGRAMAS (CRUD)
 def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
+    """Agrega un programa al JSON, validando los datos y evitando duplicados. Devuelve True si el canal es nuevo."""
 
     # Validamos que los campos no estén vacíos
     if not nombre.strip():
@@ -125,6 +128,7 @@ def agregar_programa(ruta, nombre, streamer, canal, dia, horario, categoria):
     return canal_nuevo
 
 def eliminar_programa(ruta, nombre_buscar):
+    """Elimina un programa del JSON por su nombre. Devuelve True si se eliminó, False si no se encontró."""
     programas = cargar_json(ruta)
     nombre_buscado = normalizar(nombre_buscar)
     
@@ -136,6 +140,7 @@ def eliminar_programa(ruta, nombre_buscar):
     return False
 
 def actualizar_horario(ruta, nombre_buscar, nuevo_horario):
+    """Actualiza el horario de un programa por su nombre. Devuelve True si se actualizó, False si no se encontró."""
     if not validar_horario(nuevo_horario):
         raise ValueError("Horario inválido.")
         
@@ -173,6 +178,7 @@ def imprimir_programas(programas):
     print("=" * ancho + "\n")
 
 def detectar_choques_horario(programas):
+    """Detecta choques de horario entre programas y devuelve una lista de tuplas con los detalles."""
     choques = []
     for i in range(len(programas)):
         for j in range(i + 1, len(programas)):
@@ -184,6 +190,7 @@ def detectar_choques_horario(programas):
 
 # MENÚ INTERACTIVO
 def menu_demostraciones():
+    """Muestra un menú interactivo para gestionar programas y realizar búsquedas."""
     opciones = [
         "Agregar programa", 
         "Eliminar programa", 

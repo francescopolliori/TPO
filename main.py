@@ -6,6 +6,7 @@ from generar_csv import menu_exportacion
 
 
 def generar_archivo(nombre_archivo):
+    """Genera un archivo JSON vacío si no existe, evitando sobrescribir archivos existentes."""
     try:
         # Intenta crear el archivo en modo 'x'
         with open(nombre_archivo, "x", encoding="utf-8") as archivo:

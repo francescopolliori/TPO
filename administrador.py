@@ -1,8 +1,8 @@
 import json
 
-# CARGA DE DATOS JSON
 
 def cargar_json(ruta):
+    """Carga un archivo JSON y devuelve su contenido como una lista de diccionarios."""
     try:
         with open(ruta, "r", encoding="utf-8") as archivo:
             return json.load(archivo)
@@ -10,7 +10,6 @@ def cargar_json(ruta):
         print(f"Error: No se encontró el archivo '{ruta}'.")
         return []
 
-# FUNCIONES DE AUXILIARES 
 
 def obtener_mejor(diccionario_conteo):
     """Busca y devuelve la clave con el valor más alto en un diccionario."""
@@ -23,9 +22,9 @@ def obtener_mejor(diccionario_conteo):
     return mejor_clave
 
 
-# FUNCIONES DE ESTADÍSTICAS
 
 def analizar_streamers(usuarios):
+    """Analiza los streamers favoritos de los usuarios y devuelve el más popular junto con un conteo de todos."""
     conteo = {}
     for u in usuarios:
         streamer = u["streamer_favorito"]
@@ -36,6 +35,7 @@ def analizar_streamers(usuarios):
     return obtener_mejor(conteo), conteo
 
 def analizar_categorias(usuarios, programas):
+    """Analiza los géneros de los programas favoritos de los usuarios y devuelve el más popular junto con un conteo de todos."""
     conteo = {}
     for u in usuarios:
         streamer_fav = u["streamer_favorito"]
@@ -55,6 +55,7 @@ def analizar_categorias(usuarios, programas):
     return obtener_mejor(conteo), conteo
 
 def analizar_canales(usuarios):
+    """Analiza los canales a los que están suscritos los usuarios y devuelve el más popular junto con un conteo de todos."""
     conteo = {}
     for u in usuarios:
         canal = u["suscripcion"]
@@ -65,6 +66,7 @@ def analizar_canales(usuarios):
     return obtener_mejor(conteo), conteo
 
 def analizar_horarios(usuarios):
+    """Analiza los horarios recurrentes de los usuarios y devuelve el más popular junto con un conteo de todos."""
     conteo = {}
     for u in usuarios:
         for horario in u["horario_recurrentes"]:
@@ -75,6 +77,7 @@ def analizar_horarios(usuarios):
     return obtener_mejor(conteo), conteo
 
 def streamer_con_pico_de_vistas(usuarios, programas):
+    """Determina qué streamer tiene el mayor número de usuarios que coinciden con el horario pico de visualización."""
     mejor_horario, _ = analizar_horarios(usuarios)
     if mejor_horario == "Ninguno":
         return "Ninguno"
@@ -93,7 +96,6 @@ def streamer_con_pico_de_vistas(usuarios, programas):
     return obtener_mejor(conteo)
 
 
-# INTERFAZ Y VISUALIZACIÓN
 
 def mostrar_tabla_usuarios(usuarios):
     """Imprime una tabla limpia con bordes y anchos fijos."""
